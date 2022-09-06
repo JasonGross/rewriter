@@ -2,6 +2,7 @@ Require Import Coq.ZArith.ZArith.
 Require Import Coq.FSets.FMapPositive.
 Require Import Coq.MSets.MSetPositive.
 Require Import Coq.Lists.List.
+Require Import Ltac2.Ltac2.
 Require Import Rewriter.Util.Option.
 Require Import Rewriter.Util.OptionList.
 Require Import Rewriter.Util.Bool.Reflect.
@@ -22,9 +23,14 @@ Require Import Rewriter.Util.Tactics.CacheTerm.
 Require Import Rewriter.Util.Tactics.DebugPrint.
 Require Import Rewriter.Util.CPSNotations.
 Require Import Rewriter.Util.Notations.
+Require Import Rewriter.Util.Tactics2.Head.
+Require Import Rewriter.Util.Tactics2.Constr.Unsafe.MakeAbbreviations.
+Require Rewriter.Util.Tactics2.Ltac1.
+Require Rewriter.Util.Tactics2.Constr.
 Import ListNotations. Local Open Scope bool_scope. Local Open Scope Z_scope.
 
 Local Set Primitive Projections.
+Local Set Default Proof Mode "Classic".
 Import EqNotations.
 Module Compilers.
   Export Language.Compilers.
@@ -200,38 +206,57 @@ Module Compilers.
             in @partial_lam_unif_rewrite_ruleTP_gen base ident var pident pident_arg_types value t p should_do_again true true.
       End with_var.
 
-      Ltac strip_functional_dependency term :=
-        lazymatch term with
-        | fun _ => ?P => P
-        | _ => constr_fail_with ltac:(fun _ => idtac "Cannot eliminate functional dependencies of" term;
-                                               fail 1 "Cannot eliminate functional dependencies of" term)
+      (* TODO: move? *)
+      Ltac2 binder_name_or_fresh_default (b : binder) (avoid : constr) (default_base : ident) : ident
+        := match Constr.Binder.name b with
+           | Some n => n
+           | None => Fresh.fresh (Fresh.Free.union (Fresh.Free.of_goal ()) (Fresh.Free.of_constr avoid)) default_base
+           end.
+
+      Ltac2 Type exn ::= [ Cannot_eliminate_functional_dependencies (constr) ].
+      Ltac2 strip_functional_dependency (term : constr) : constr :=
+        lazy_match! term with
+        | fun _ => ?p => p
+        | _ => Control.zero (Cannot_eliminate_functional_dependencies term)
+        end.
+      Ltac2 rec refine_reify_under_forall_types' (base_type : constr) (base_type_interp : constr) (ty_ctx : constr) (cur_i : constr) (lem : constr) (cont : constr (* ty_ctx *) -> constr (* cur_i *) -> constr (* lem *) -> unit) : unit :=
+        let default () := cont ty_ctx cur_i lem in
+        match Constr.Unsafe.kind lem with
+        | Constr.Unsafe.Cast lem _ _ => refine_reify_under_forall_types' base_type base_type_interp ty_ctx cur_i lem cont
+        | Constr.Unsafe.Prod b p
+          => let n := binder_name_or_fresh_default b lem @T in
+             let t := Constr.Binder.type b in
+             if Constr.is_sort t
+             then
+               Control.refine
+                 (fun ()
+                  => strip_functional_dependency
+                       (Constr.in_context
+                          n base_type
+                          (fun ()
+                           => let rt := mkVar n in
+                              let ty_ctx' := mkApp 'PositiveMap.add [cur_i; rt; ty_ctx] in
+                              let t := mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['_; cur_i; ty_ctx'] ] in
+                              let p := Constr.Unsafe.substnl [t] 0 t in
+                              let cur_i := Std.eval_vm None (mkApp 'Pos.succ [cur_i]) in
+                              refine_reify_under_forall_types' base_type base_type_interp ty_ctx cur_i p cont)))
+             else
+               default ()
+        | _ => default ()
         end.
 
-      Ltac reify_under_forall_types' base_type base_type_interp ty_ctx cur_i lem cont :=
-        lazymatch lem with
-        | forall T : Type, ?P
-          => let P' := fresh in
-             let ty_ctx' := fresh "ty_ctx" in
-             let t := fresh "t" in
-             strip_functional_dependency
-               (fun t : base_type
-                => match PositiveMap.add cur_i t ty_ctx return _ with
-                   | ty_ctx'
-                     => match base_type_interp (pattern.base.lookup_default cur_i ty_ctx') return _ with
-                        | T
-                          => match P return _ with
-                             | P'
-                               => ltac:(let P := (eval cbv delta [P' T ty_ctx'] in P') in
-                                        let ty_ctx := (eval cbv delta [ty_ctx'] in ty_ctx') in
-                                        clear P' T ty_ctx';
-                                        let cur_i := (eval vm_compute in (Pos.succ cur_i)) in
-                                        let res := reify_under_forall_types' base_type base_type_interp ty_ctx cur_i P cont in
-                                        exact res)
-                             end
-                        end
-                   end)
-        | ?lem => cont ty_ctx cur_i lem
-        end.
+      Ltac2 refine_reify_under_forall_types (base_type : constr) (base_type_interp : constr) (lem : constr) (cont : constr (* ty_ctx *) -> constr (* cur_i *) -> constr (* lem *) -> unit) : unit :=
+        refine_reify_under_forall_types' base_type base_type_interp '(@PositiveMap.empty $base_type) '(1%positive) lem cont.
+      Ltac2 reify_under_forall_types (base_type : constr) (base_type_interp : constr) (lem : constr) (cont : constr (* ty_ctx *) -> constr (* cur_i *) -> constr (* lem *) -> constr) : constr :=
+        '(ltac2:(refine_reify_under_forall_types base_type base_type_interp lem (fun ty_ctx cur_i lem => Control.refine (fun () => cont ty_ctx cur_i lem)))).
+
+      #[deprecated(since="8.15",note="Use Ltac2 instead.")]
+       Ltac reify_under_forall_types base_type base_type_interp lem cont :=
+        let f := ltac2:(base_type base_type_interp lem cont
+                        |- let cont ty_ctx cur_i lem
+                             := Ltac1.apply cont [Ltac1.of_constr ty_ctx; Ltac1.of_constr cur_i; Ltac1.of_constr lem] Ltac1.run in
+                           refine_reify_under_forall_types (Ltac1.get_to_constr "base_type" base_type) (Ltac1.get_to_constr "base_type_interp" base_type_interp) (Ltac1.get_to_constr "lem" lem) cont) in
+        constr:(ltac:(f base_type base_type_interp lem ltac:(fun ty_ctx cur_i lem => let v := cont ty_ctx cur_i lem in refine v))).
 
       Ltac prop_to_bool H := eval cbv [decb] in (decb H).
 
@@ -266,9 +291,6 @@ Module Compilers.
         end.
       Ltac equation_to_parts lem :=
         equation_to_parts' lem (@nil bool).
-
-      Ltac reify_under_forall_types base_type base_type_interp lem cont :=
-        reify_under_forall_types' base_type base_type_interp (@PositiveMap.empty base_type) (1%positive) lem cont.
 
       Ltac preadjust_pattern_type_variables pat :=
         let pat := (eval cbv [pattern.type.relax pattern.type.subst_default pattern.type.subst_default_relax pattern.type.unsubst_default_relax] in pat) in
