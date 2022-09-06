@@ -225,8 +225,7 @@ Module Compilers.
         | Constr.Unsafe.Cast lem _ _ => refine_reify_under_forall_types' base_type base_type_interp ty_ctx cur_i lem cont
         | Constr.Unsafe.Prod b p
           => let n := binder_name_or_fresh_default b lem @T in
-             let t := Constr.Binder.type b in
-             if Constr.is_sort t
+             if Constr.is_sort (Constr.Binder.type b)
              then
                Control.refine
                  (fun ()
@@ -235,9 +234,9 @@ Module Compilers.
                           n base_type
                           (fun ()
                            => let rt := mkVar n in
-                              let ty_ctx' := mkApp 'PositiveMap.add [cur_i; rt; ty_ctx] in
-                              let t := mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['_; cur_i; ty_ctx'] ] in
-                              let p := Constr.Unsafe.substnl [t] 0 t in
+                              let ty_ctx := mkApp 'PositiveMap.add [cur_i; rt; ty_ctx] in
+                              let t := mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['_; cur_i; ty_ctx] ] in
+                              let p := Constr.Unsafe.substnl [t] 0 p in
                               let cur_i := Std.eval_vm None (mkApp 'Pos.succ [cur_i]) in
                               refine_reify_under_forall_types' base_type base_type_interp ty_ctx cur_i p cont)))
              else
@@ -686,7 +685,8 @@ Module Compilers.
           lem
           ltac:(
           fun ty_ctx cur_i lem
-          => let lem := equation_to_parts lem in
+          => let __ := match goal with _ => idtac "here" ty_ctx cur_i lem end in
+             let lem := equation_to_parts lem in
              let res := reify_to_pattern_and_replacement_in_context base reify_base base_interp base_interp_beq try_make_transport_base_cps ident reify_ident pident pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var gets_inlined should_do_again constr:(1%positive) lem (@expr.var_context.nil (base.type base) (fun _ => positive)) in
              res).
 
