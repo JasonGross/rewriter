@@ -59,6 +59,7 @@ Proof.
   induction ls; simpl; eauto.
 Qed.
 
+Set Ltac Backtrace. Set Ltac2 Backtrace. Ltac2 Set PreCommon.Pre.reify_debug_level := 100.
 Make rewriter := Rewriter For (zero_plus, plus_zero,
                                times_zero, times_one, eval_map,
                                eval_fold_left, do_again eval_length,

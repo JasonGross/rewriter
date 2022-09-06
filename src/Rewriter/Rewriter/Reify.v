@@ -237,10 +237,15 @@ Module Compilers.
                           n base_type
                           (fun ()
                            => let rt := mkVar n in
+                              printf "1";
                               let ty_ctx := debug_Constr_check (mkApp 'PositiveMap.add [base_type; cur_i; rt; ty_ctx]) in
+                              printf "2";
                               let t := debug_Constr_check (mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['_; cur_i; ty_ctx] ]) in
+                              printf "3";
                               let p := debug_Constr_check (Constr.Unsafe.substnl [t] 0 p) in
+                              printf "3";
                               let cur_i := Std.eval_vm None (mkApp 'Pos.succ [cur_i]) in
+                              printf "4";
                               refine_reify_under_forall_types' base_type base_type_interp ty_ctx cur_i p cont)))
              else
                default ()

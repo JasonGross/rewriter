@@ -24,7 +24,7 @@ Definition make_lets_def (n : nat) (v : Z) (acc : Z) :=
 
 Definition eval_Z_to_nat n : Z.to_nat ('n) = '(Z.to_nat n).
 Proof. reflexivity. Qed.
-
+Set Ltac Backtrace. Set Ltac2 Backtrace. Ltac2 Set PreCommon.Pre.reify_debug_level := 100.
 Time Make myrew := Rewriter For (Z.add_0_r, eval_Z_to_nat, eval_rect nat, eval_rect prod).
 
 Notation goal n := (forall acc, make_lets_def n 0 acc = acc) (only parsing).
