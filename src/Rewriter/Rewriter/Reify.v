@@ -236,7 +236,7 @@ Module Compilers.
                           n base_type
                           (fun ()
                            => let rt := mkVar n in
-                              let ty_ctx := debug_Constr_check (mkApp 'PositiveMap.add [cur_i; rt; ty_ctx]) in
+                              let ty_ctx := debug_Constr_check (mkApp 'PositiveMap.add [base_type; cur_i; rt; ty_ctx]) in
                               let t := debug_Constr_check (mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['_; cur_i; ty_ctx] ]) in
                               let p := debug_Constr_check (Constr.Unsafe.substnl [t] 0 p) in
                               let cur_i := Std.eval_vm None (mkApp 'Pos.succ [cur_i]) in
@@ -687,8 +687,7 @@ Module Compilers.
           lem
           ltac:(
           fun ty_ctx cur_i lem
-          => let __ := match goal with _ => idtac "here" ty_ctx cur_i lem end in
-             let lem := equation_to_parts lem in
+          => let lem := equation_to_parts lem in
              let res := reify_to_pattern_and_replacement_in_context base reify_base base_interp base_interp_beq try_make_transport_base_cps ident reify_ident pident pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var gets_inlined should_do_again constr:(1%positive) lem (@expr.var_context.nil (base.type base) (fun _ => positive)) in
              res).
 
