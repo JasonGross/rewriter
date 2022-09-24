@@ -4407,12 +4407,10 @@ Notation specs   :=
                                                 @app B (f x) flat_map_tl) xs)))
                                       (@nil (prod bool Prop))))))))))))).
 
-  Goal ProofsCommon.Compilers.RewriteRules.GoalType.VerifiedRewriter_with_ind_args
-       scraped_data InductiveHList.nil base ident raw_ident pattern_ident   false   false   true rules_proofs.
-
     Unset Ltac Backtrace.
     Set Printing All.
     Set Printing Depth 100000000.
+  Goal True.
     let reify_package := constr:(reify_package) in
     let exprInfo := constr:(exprInfo) in
     let exprExtraInfo := constr:(exprExtraInfo) in
@@ -4431,4 +4429,3 @@ Notation specs   :=
    let v := Reify.Compilers.RewriteRules.Make.Reify reify_base reify_ident exprInfo
                                                     exprExtraInfo pkg ident_is_var_like include_interp specs in
    idtac v.
-

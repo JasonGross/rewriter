@@ -12087,4 +12087,7 @@ Ltac mk name ty body :=
             ident raw_ident raw_ident_infos_of0
             raw_ident_eager_List_nth_default0
       end ) ( raw_invert_bind_args0 ) in idtac.
-
+(*
+Error: Anomaly "Evar ?X3577 was not declared."
+Please report at http://coq.inria.fr/bugs/.
+*)

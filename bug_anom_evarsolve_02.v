@@ -1,15 +1,1216 @@
-(* -*- mode: coq; coq-prog-args: ("-emacs" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,+undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes" "-R" "src/Rewriter" "Rewriter" "-I" "src/Rewriter/Util/plugins" "-top" "Rewriter.Rewriter.Examples" "-native-compiler" "ondemand" "-native-compiler" "ondemand") -*- *)
-(* File reduced by coq-bug-minimizer from original input, then from 104176 lines to 97527 lines, then from 97560 lines to 3537 lines, then from 3550 lines to 3708 lines, then from 3713 lines to 3538 lines, then from 3551 lines to 3718 lines, then from 3723 lines to 3540 lines, then from 3553 lines to 3711 lines, then from 3716 lines to 3542 lines, then from 3555 lines to 3711 lines, then from 3716 lines to 3574 lines, then from 3587 lines to 7609 lines, then from 7612 lines to 3623 lines, then from 3636 lines to 5049 lines, then from 5052 lines to 4422 lines, then from 4435 lines to 4464 lines, then from 4469 lines to 4430 lines *)
+(* -*- mode: coq; coq-prog-args: ("-emacs" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,+undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes" "-R" "src/Rewriter" "Rewriter" "-I" "src/Rewriter/Util/plugins" "-top" "Rewriter.Rewriter.Examples" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand") -*- *)
+(* File reduced by coq-bug-minimizer from original input, then from 104176 lines to 97527 lines, then from 97560 lines to 3537 lines, then from 3550 lines to 3708 lines, then from 3713 lines to 3538 lines, then from 3551 lines to 3718 lines, then from 3723 lines to 3540 lines, then from 3553 lines to 3711 lines, then from 3716 lines to 3542 lines, then from 3555 lines to 3711 lines, then from 3716 lines to 3574 lines, then from 3587 lines to 7609 lines, then from 7612 lines to 3623 lines, then from 3636 lines to 5049 lines, then from 5052 lines to 4422 lines, then from 4435 lines to 4464 lines, then from 4469 lines to 4430 lines, then from 4441 lines to 4298 lines, then from 4311 lines to 6242 lines, then from 6245 lines to 4519 lines, then from 4533 lines to 4556 lines, then from 4562 lines to 4519 lines, then from 4533 lines to 5529 lines, then from 5535 lines to 5240 lines, then from 5254 lines to 5295 lines, then from 5301 lines to 5250 lines, then from 5264 lines to 5298 lines, then from 5304 lines to 5263 lines, then from 5277 lines to 5317 lines, then from 5323 lines to 5280 lines, then from 5294 lines to 5326 lines, then from 5332 lines to 5282 lines, then from 5296 lines to 5327 lines, then from 5333 lines to 5283 lines, then from 5297 lines to 5332 lines, then from 5338 lines to 5295 lines, then from 5301 lines to 5296 lines *)
 (* coqc version 8.15.0 compiled with OCaml 4.11.2
    coqtop version 8.15.0
-   Expected coqc runtime on this file: 3.346 sec *)
-Require Rewriter.Language.Wf.
-Require Rewriter.Language.IdentifiersBasicGenerate.
+   Modules that could not be inlined: Rewriter.Rewriter.Rewriter
+   Expected coqc runtime on this file: 2.329 sec *)
+Require Ltac2.Ltac2.
 Require Rewriter.Rewriter.Rewriter.
+
 Axiom proof_admitted : False.
 Tactic Notation "admit" := abstract case proof_admitted.
-Module Export Constr.
+Module Export Ident.
 Import Ltac2.Ltac2.
+Import Ltac2.Printf.
+
+Ltac2 of_constr (refine_to_named_lambda : Ltac1.t -> unit) (c : constr) : ident
+  := let default () := Control.throw (Tactic_failure (Some (fprintf "Ident.of_constr: failure to make a name from %t" c))) in
+     match Constr.Unsafe.kind '(ltac2:(refine_to_named_lambda (Ltac1.of_constr c))) with
+     | Constr.Unsafe.Lambda x _
+       => match Constr.Binder.name x with
+          | Some id => id
+          | None => default ()
+          end
+     | _ => default ()
+     end.
+Module Export Char.
+Ltac2 newline () : char := Char.of_int 10.
+Module Export String.
+Ltac2 newline () : string := String.make 1 (Char.newline ()).
+Module Export Message.
+
+Ltac2 of_list (pr : 'a -> message) (ls : 'a list) : message
+  := fprintf
+       "[%a]"
+       (fun () a => a)
+       (match ls with
+        | [] => fprintf ""
+        | x :: xs
+          => List.fold_left (fun init x => fprintf "%a, %a" (fun () a => a) init (fun () => pr) x) xs (pr x)
+        end).
+
+Ltac2 of_binder (b : binder) : message
+  := fprintf "%a : %t" (fun () a => a) (match Constr.Binder.name b with
+                                        | Some n => fprintf "%I" n
+                                        | None => fprintf ""
+                                        end)
+             (Constr.Binder.type b).
+Module Export Ltac1.
+
+Ltac2 Type exn ::= [ Not_a_constr (string, Ltac1.t) ].
+
+#[deprecated(since="8.15",note="Use Ltac2 instead.")]
+ Ltac2 get_to_constr (debug_name : string) v :=
+  match Ltac1.to_constr v with
+  | Some v => v
+  | None => Control.throw (Not_a_constr debug_name v)
+  end.
+
+#[deprecated(since="8.15",note="Use Ltac2 instead.")]
+ Ltac2 apply_c (f : Ltac1.t) (args : constr list) : constr :=
+  '(ltac2:(Ltac1.apply f (List.map Ltac1.of_constr args) (fun v => Control.refine (fun () => get_to_constr "apply_c:arg" v)))).
+Import Ltac2.Constr.Unsafe.
+
+Ltac2 mkApp (f : constr) (args : constr list) :=
+  make (App f (Array.of_list args)).
+Ltac2 mkLambda b (body : constr) :=
+  make (Lambda b body).
+Ltac2 mkLetIn (b : binder) (val : constr) (body : constr) :=
+  make (LetIn b val body).
+Ltac2 mkRel (i : int) :=
+  make (Rel i).
+Ltac2 mkVar (i : ident) :=
+  make (Var i).
+
+Module List.
+  (* Drop once the minimum dependency has been bumpped to 8.17 *)
+Ltac2 rec for_all2_aux (on_length_mismatch : 'a list -> 'b list -> bool) f xs ys :=
+  match xs with
+  | [] => match ys with
+          | [] => true
+          | y :: ys' => on_length_mismatch xs ys
+          end
+  | x :: xs'
+    => match ys with
+       | [] => on_length_mismatch xs ys
+       | y :: ys'
+         => match f x y with
+            | true => for_all2_aux on_length_mismatch f xs' ys'
+            | false => false
+            end
+       end
+  end.
+
+(* Drop once the minimum dependency has been bumpped to 8.17 *)
+Ltac2 equal f xs ys := for_all2_aux (fun _ _ => false) f xs ys.
+End  List.
+
+Module Option.
+  Ltac2 equal (eq : 'a -> 'b -> bool) (a : 'a option) (b : 'b option) : bool
+    := match a with
+       | None => match b with
+                 | None => true
+                 | _ => false
+                 end
+       | Some a => match b with
+                   | Some b => eq a b
+                   | _ => false
+                   end
+       end.
+End Option.
+
+Module Array.
+  Import Ltac2.Array.
+  Ltac2 rec for_all2_aux (p : 'a -> 'b -> bool) (a : 'a array) (b : 'b array) (pos : int) (len : int) :=
+    if Int.equal len 0
+    then true
+    else if p (get a pos) (get b pos)
+         then for_all2_aux p a b (Int.add pos 1) (Int.sub len 1)
+         else false.
+
+  Ltac2 for_all2 p a b :=
+    let lena := length a in
+    let lenb := length b in
+    if Int.equal lena lenb
+    then for_all2_aux p a b 0 lena
+    else Control.throw_invalid_argument "Array.for_all2".
+  Ltac2 equal p a b :=
+    let lena := length a in
+    let lenb := length b in
+    if Int.equal lena lenb
+    then for_all2_aux p a b 0 lena
+    else false.
+End Array.
+
+Module Projection.
+  Import Constr.Unsafe.
+  Ltac2 equal (x : projection) (y : projection) : bool
+    := let dummy := make (Rel (-1)) in
+       Constr.equal (make (Proj x dummy)) (make (Proj y dummy)).
+End Projection.
+
+Module Constr.
+  Import Ltac2.Constr.
+  Import Ltac2.Constr.Unsafe.
+  Import Ltac2.Bool.
+  Ltac2 rec kind_nocast_gen kind (x : constr) :=
+    let k := kind x in
+    match k with
+    | Cast x _ _ => kind_nocast_gen kind x
+    | _ => k
+    end.
+  Ltac2 rec equal_nounivs (x : constr) (y : constr) : bool :=
+    let kind := kind_nocast_gen kind in
+    if Constr.equal x y
+    then true
+    else match kind x with
+         | Cast x _ _ => equal_nounivs x y
+         | App fx xs
+           => match kind y with
+              | App fy ys
+                => equal_nounivs fx fy
+                   && Array.equal equal_nounivs xs ys
+              | _ => false
+              end
+         | Rel _ => false (* handled by Constr.equal *)
+         | Var _ => false (* handled by Constr.equal *)
+         | Meta _ => false (* handled by Constr.equal *)
+         | Uint63 _ => false (* handled by Constr.equal *)
+         | Float _ => false (* handled by Constr.equal *)
+         | Evar ex instx
+           => match kind y with
+              | Evar ey insty
+                => let inst := Array.empty () in
+                   if Constr.equal (make (Evar ex inst)) (make (Evar ey inst))
+                   then Array.equal equal_nounivs instx insty
+                   else false
+              | _ => false
+              end
+         | Sort sx
+           => match kind y with
+              | Sort sy => true (*eq_sorts sx sy*)
+              | _ => false
+              end
+         | Prod xb fx
+           => match kind y with
+              | Prod yb fy
+                => equal_nounivs (Binder.type xb) (Binder.type yb) && equal_nounivs fx fy
+              | _ => false
+              end
+         | Lambda xb fx
+           => match kind y with
+              | Lambda yb fy
+                => equal_nounivs (Binder.type xb) (Binder.type yb) && equal_nounivs fx fy
+              | _ => false
+              end
+         | LetIn xb xv fx
+           => match kind y with
+              | LetIn yb yv fy
+                => equal_nounivs (Binder.type xb) (Binder.type yb) && equal_nounivs xv yv && equal_nounivs fx fy
+              | _ => false
+              end
+         | Constant cx instx
+           => match kind y with
+              | Constant cy insty
+                => Constr.equal (make (Constant cx instx)) (make (Constant cy instx))
+              | _ => false
+              end
+         | Ind ix instx
+           => match kind y with
+              | Ind iy insty
+                => Ind.equal ix iy
+              | _ => false
+              end
+         | Constructor cx instx
+           => match kind y with
+              | Constructor cy insty
+                => Constr.equal (make (Constructor cx instx)) (make (Constructor cy instx))
+              | _ => false
+              end
+         | Fix xa xi xb xf
+           => match kind y with
+              | Fix ya yi yb yf
+                => Array.equal Int.equal xa ya
+                   && Int.equal xi yi
+                   && Array.equal (fun b1 b2 => equal_nounivs (Binder.type b1) (Binder.type b2)) xb yb
+                   && Array.equal equal_nounivs xf yf
+              | _ => false
+              end
+         | CoFix xi xb xf
+           => match kind y with
+              | CoFix yi yb yf
+                => Int.equal xi yi
+                   && Array.equal (fun b1 b2 => equal_nounivs (Binder.type b1) (Binder.type b2)) xb yb
+                   && Array.equal equal_nounivs xf yf
+              | _ => false
+              end
+         | Proj px cx
+           => match kind y with
+              | Proj py cy
+                => Projection.equal px py && equal_nounivs cx cy
+              | _ => false
+              end
+         | Array _ x1 x2 x3
+           => match kind y with
+              | Array _ y1 y2 y3
+                => Array.equal equal_nounivs x1 y1
+                   && equal_nounivs x2 y2
+                   && equal_nounivs x3 y3
+              | _ => false
+              end
+         | Case cx x1 cix x2 x3
+           => match kind y with
+              | Case cy y1 ciy y2 y3
+                => Option.equal (Array.equal equal_nounivs)
+                                (match cix with
+                                 | NoInvert => None
+                                 | CaseInvert cix => Some cix
+                                 end)
+                                (match cix with
+                                 | NoInvert => None
+                                 | CaseInvert ciy => Some ciy
+                                 end)
+                   && equal_nounivs x1 y1
+                   && equal_nounivs x2 y2
+                   && Array.equal equal_nounivs x3 y3
+              | _ => false
+              end
+         end.
+End Constr.
+
+Import Rewriter.Language.Language.
+Import Rewriter.Util.LetIn.
+Import Rewriter.Util.ListUtil.
+Import Rewriter.Util.Option.
+Import Rewriter.Util.Prod.
+Import Rewriter.Util.NatUtil.
+Import Rewriter.Util.Bool.
+Module Export Compilers.
+  Export Language.Compilers.
+  Module Export Exports.
+    Ltac2 Type exn ::= [ Reification_failure (message) ].
+    Ltac2 Type exn ::= [ Reification_panic (message) ].
+  End Exports.
+
+  Module Import Ltac2.
+    Module Export Ident.
+
+      Ltac constant_to_lambda_reified cst :=
+        let cst := fresh "reified_" cst in constr:(fun cst : True => cst).
+      Ltac2 refine_constant_to_lambda_reified (c : Ltac1.t) : unit :=
+        let f := ltac1:(c |- let v := constant_to_lambda_reified constr:(c) in exact v) in
+        f c.
+      Ltac2 reified_of_constr (c : constr) : ident
+        := Ident.of_constr refine_constant_to_lambda_reified c.
+    End Ident.
+  End Ltac2.
+
+  Ltac2 with_term_in_context (cache : (unit -> binder) list) (tys : constr list) (term : constr) (tac : constr -> unit) : unit :=
+    printf "Warning: with_term_in_context: Bad asymptotics";
+    let rec aux0 (cache : (unit -> binder) list) (avoid : Fresh.Free.t) (k : unit -> unit)
+      := match cache with
+         | [] => k ()
+         | b :: bs
+           => let b := b () in
+              let id := match Constr.Binder.name b with
+                        | Some id => id
+                        | None => Fresh.fresh avoid @DUMMY_with_term_in_context_MISSING
+                        end in
+              let avoid := Fresh.Free.union avoid (Fresh.Free.of_ids [id]) in
+              let _ := Constr.in_context id (Constr.Binder.type b) (fun () => aux0 bs avoid k; Control.refine (fun () => 'I)) in
+              ()
+         end in
+    let rec aux (tys : constr list) (acc : ident list) (avoid : Fresh.Free.t)
+      := match tys with
+         | [] => aux0 cache avoid (fun () => tac (Constr.Unsafe.substnl (List.map mkVar (List.rev acc)) 0 term))
+         | ty :: tys
+           => let id := Fresh.fresh avoid @DUMMY in
+              let avoid := Fresh.Free.union avoid (Fresh.Free.of_ids [id]) in
+              let _ := Constr.in_context id ty (fun () => aux tys (id :: acc) avoid; Control.refine (fun () => 'I)) in
+              ()
+         end in
+    aux tys [] (Fresh.Free.of_constr term).
+
+  Module Export Reify.
+    Ltac2 debug_level := Pre.reify_debug_level.
+
+    Ltac2 mutable should_debug_enter_reify () := Int.le 3 debug_level.
+    Ltac2 mutable should_debug_enter_reify_preprocess () := Int.le 3 debug_level.
+    Ltac2 mutable should_debug_enter_reify_ident_preprocess () := Int.le 4 debug_level.
+    Ltac2 mutable should_debug_enter_reify_after_preprocess () := Int.le 4 debug_level.
+    Ltac2 mutable should_debug_leave_reify_success () := Int.le 6 debug_level.
+    Ltac2 mutable should_debug_leave_reify_failure () := Int.le 0 debug_level.
+    Ltac2 mutable should_debug_leave_reify_normal_failure () := Int.le 6 debug_level.
+    Ltac2 mutable should_debug_enter_reify_ident_after_preprocess () := Int.le 4 debug_level.
+    Ltac2 mutable should_debug_enter_lookup_ident () := Int.le 4 debug_level.
+    Ltac2 mutable should_debug_leave_lookup_ident_success () := Int.le 4 debug_level.
+    Ltac2 mutable should_debug_leave_lookup_ident_failure_verbose () := Int.le 6 debug_level.
+    Ltac2 mutable should_debug_leave_lookup_ident_failure () := Int.le 5 debug_level.
+    Ltac2 mutable should_debug_enter_plug_template_ctx () := Int.le 7 debug_level.
+    Ltac2 mutable should_debug_enter_reify_case () := Int.le 7 debug_level.
+    Ltac2 mutable should_debug_fine_grained () := Int.le 100 debug_level.
+    Ltac2 mutable should_debug_print_args () := Int.le 50 debug_level.
+    Ltac2 mutable should_debug_let_bind () := Int.le 4 debug_level.
+    Ltac2 mutable should_debug_typing_failure () := Int.le 5 debug_level.
+    Ltac2 mutable should_debug_typing_failure_assume_well_typed () := Int.le 2 debug_level.
+    Ltac2 mutable should_debug_check_app_early () := Int.le 6 debug_level.
+    Ltac2 mutable should_debug_profile () := Int.le 1 debug_level.
+
+    Ltac2 debug_if (cond : unit -> bool) (tac : unit -> 'a) (default : 'a) :=
+      if cond ()
+      then tac ()
+      else default.
+
+    Ltac2 debug_typing_failure (funname : string) (x : constr) (err : exn)
+      := debug_if should_debug_typing_failure (fun () => printf "Warning: %s: failure to typecheck %t: %a" funname x (fun () => Message.of_exn) err) ().
+    Ltac2 debug_typing_failure_assume_well_typed (funname : string) (v : constr) (term : constr) (ctx_tys : binder list) (ty : constr)
+      := debug_if should_debug_typing_failure_assume_well_typed (fun () => printf "Warning: %s: could not well-type %t due to underlying issue typechecking %t without relevant context %a, but assuming that it's well-typed because %t is not a template-parameter type" funname v term (fun () => Message.of_list Message.of_binder) ctx_tys ty) ().
+    Ltac2 debug_profile (descr : string) (f : unit -> 'a) : 'a
+      := if should_debug_profile ()
+         then Control.time (Some descr) f
+         else f ().
+    Ltac2 debug_fine_grained (funname : string) (msg : unit -> message)
+      := debug_if should_debug_fine_grained (fun () => printf "%s: %a" funname (fun () => msg) ()) ().
+    Ltac2 debug_enter_reify (funname : string) (e : constr)
+      := debug_if should_debug_enter_reify (fun () => printf "%s: Attempting to reify:" funname; printf "%t" e) ().
+    Ltac2 debug_enter_reify_case (funname : string) (casename : string) (e : constr)
+      := debug_if should_debug_enter_reify_case (fun () => printf "%s: Case: %s" funname casename) ().
+    Ltac2 debug_enter_reify_preprocess (funname : string) (e : constr)
+      := debug_if should_debug_enter_reify_preprocess (fun () => printf "%s: Attempting to preprocess:" funname; printf "%t" e) ().
+
+    Ltac2 debug_enter_reify_after_preprocess (funname : string) (e : constr)
+      := debug_if should_debug_enter_reify_after_preprocess (fun () => printf "%s: Attempting to reify (post-preprocessing):" funname; printf "%t" e) ().
+    Ltac2 debug_enter_reify_ident_preprocess (funname : string) (e : constr)
+      := debug_if should_debug_enter_reify_ident_preprocess (fun () => printf "%s: Attempting to (ident) preprocess:" funname; printf "%t" e) ().
+    Ltac2 debug_enter_reify_ident_after_preprocess (funname : string) (e : constr)
+      := debug_if should_debug_enter_reify_ident_after_preprocess (fun () => printf "%s: Attempting to reify ident (post-preprocessing):" funname; printf "%t" e) ().
+    Ltac2 debug_leave_reify_success (funname : string) (e : constr) (ret : constr)
+      := debug_if should_debug_leave_reify_success (fun () => printf "%s: Success in reifying: %t as %t" funname e ret) ().
+    Ltac2 debug_leave_reify_failure (funname : string) (e : constr)
+      := debug_if should_debug_leave_reify_failure (fun () => printf "%s: Failure in reifying:" funname; printf "%t" e) ().
+    Ltac2 debug_leave_reify_normal_failure (funname : string) (e : constr)
+      := debug_if should_debug_leave_reify_normal_failure (fun () => printf "%s: Failure in reifying:" funname; printf "%t" e) ().
+    Ltac2 debug_enter_lookup_ident (funname : string) (e : constr)
+      := debug_if should_debug_enter_lookup_ident (fun () => printf "%s: Attempting to lookup ident:" funname; printf "%t" e) ().
+    Ltac2 debug_leave_lookup_ident_success (funname : string) (e : constr) (ret : constr)
+      := debug_if should_debug_leave_lookup_ident_success (fun () => printf "%s: Success in looking up ident: %t as %t" funname e ret) ().
+    Ltac2 debug_leave_lookup_ident_failure (funname : string) (e : constr) (ls : constr)
+      := if should_debug_leave_lookup_ident_failure_verbose ()
+         then printf "%s: Failure in looking up:" funname; printf "%t (in %t)" e ls
+         else if should_debug_leave_lookup_ident_failure ()
+              then printf "%s: Failure in looking up:" funname; printf "%t" e
+              else ().
+    Ltac2 debug_enter_plug_template_ctx (funname : string) (e : constr) (template_ctx : constr list)
+      := debug_if
+           should_debug_enter_plug_template_ctx
+           (fun ()
+            => printf
+                 "%s: Attempting to plug template ctx into %t %a"
+                 funname e (fun () => Message.of_list (fprintf "%t")) template_ctx)
+           ().
+    Ltac2 debug_let_bind (funname : string) (name : ident) (ty : constr) (val : constr)
+      := debug_if
+           should_debug_let_bind
+           (fun ()
+            => printf "%s: let-binding %I : %t := %t" funname name ty val)
+           ().
+    Ltac2 debug_print_args (funname : string) (pr : 'a -> message) (args : 'a)
+      := debug_if should_debug_print_args (fun () => printf "%s: args: %a" funname (fun () => pr) args) ().
+    Ltac2 debug_Constr_check (funname : string) (descr : constr -> constr -> exn -> message) (var : constr) (cache : (unit -> binder) list) (var_ty_ctx : constr list) (e : constr)
+      := debug_if
+           should_debug_check_app_early
+           (fun () => match Constr.Unsafe.check e with
+                      | Val e => e
+                      | Err _
+                        => with_term_in_context
+                             cache
+                             (List.map (fun t => mkApp var [t]) var_ty_ctx) e
+                             (fun e' => match Constr.Unsafe.check e' with
+                                        | Val _ =>   ()
+                                        | Err err
+                                          => let descr := descr e e' err in
+                                             Control.throw
+                                              (Reification_panic
+                                                 (fprintf "Anomaly: %s:%s%t failed to check (in context %a as %t):%s%a" funname (String.newline ()) e (fun () => Message.of_list Message.of_constr) var_ty_ctx e' (String.newline ()) (fun () a => a) descr))
+                                        end);
+                           e
+                      end)
+           e.
+  End Reify.
+
+  Module Export type.
+    Import Language.Compilers.type.
+    Ltac2 rec reify (base_reify : constr -> constr) (base_type : constr) (ty : constr) :=
+      Reify.debug_enter_reify "type.reify" ty;
+      let reify_rec (t : constr) := reify base_reify base_type t in
+      let res :=
+        lazy_match! (eval cbv beta in $ty) with
+        | ?a -> ?b
+          => let ra := reify_rec a in
+             let rb := reify_rec b in
+             '(@arrow $base_type $ra $rb)
+        | @interp _ _ ?t => t
+        | _ => let rt := base_reify ty in
+               '(@base $base_type $rt)
+        end in
+      Reify.debug_leave_reify_success "type.reify" ty res;
+      res.
+    #[deprecated(since="8.15",note="Use Ltac2 type.reify instead.")]
+     Ltac reify base_reify base_type ty :=
+      let f := ltac2:(base_reify base_type ty
+                      |- Control.refine (fun () => reify (fun v => Ltac1.apply_c base_reify [v]) (Ltac1.get_to_constr "type.reify:base_type" base_type) (Ltac1.get_to_constr "type.reify:ty" ty))) in
+      constr:(ltac:(f base_reify base_type ty)).
+  End type.
+  Module Export base.
+    Import Language.Compilers.base.
+    Local Notation einterp := type.interp.
+
+    Ltac2 rec reify (base : constr) (reify_base : constr -> constr) (ty : constr) :=
+      let reify_rec (ty : constr) := reify base reify_base ty in
+      Reify.debug_enter_reify "base.reify" ty;
+      let res :=
+        lazy_match! (eval cbv beta in $ty) with
+        | Datatypes.unit => '(@type.unit $base)
+        | Datatypes.prod ?a ?b
+          => let ra := reify_rec a in
+             let rb := reify_rec b in
+             '(@type.prod $base $ra $rb)
+        | Datatypes.list ?t
+          => let rt := reify_rec t in
+             '(@type.list $base $rt)
+        | Datatypes.option ?t
+          => let rt := reify_rec t in
+             '(@type.option $base $rt)
+        | @interp  ?base' ?base_interp ?t => t
+        | @einterp (@type  ?base') (@interp  ?base' ?base_interp) (@Compilers.type.base (@type  ?base') ?t) => t
+        | ?ty => let rt := reify_base ty in
+                 '(@type.type_base $base $rt)
+        end in
+      Reify.debug_leave_reify_success "base.reify" ty res;
+      res.
+    #[deprecated(since="8.15",note="Use Ltac2 base.reify instead.")]
+     Ltac reify base reify_base ty :=
+      let f := ltac2:(base reify_base ty
+                      |- Control.refine (fun () => reify (Ltac1.get_to_constr "base" base) (fun v => Ltac1.apply_c reify_base [v]) (Ltac1.get_to_constr "ty" ty))) in
+      constr:(ltac:(f base reify_base ty)).
+  End base.
+
+  Module Export expr.
+    Import Language.Compilers.expr.
+
+    Module Export var_context.
+      Inductive list {base_type} {var : type base_type -> Type} :=
+      | nil
+      | cons {T t} (gallina_v : T) (v : var t) (ctx : list).
+    End var_context.
+
+    Ltac2 rec is_template_parameter (ctx_tys : binder list) (parameter_type : constr) : bool :=
+      let do_red () :=
+        let t := Std.eval_hnf parameter_type in
+        if Constr.equal t parameter_type
+        then false
+        else is_template_parameter ctx_tys t in
+      match Constr.Unsafe.kind parameter_type with
+      | Constr.Unsafe.Sort _ => true
+      | Constr.Unsafe.Cast x _ _ => is_template_parameter ctx_tys x
+      | Constr.Unsafe.Prod b body => is_template_parameter (b :: ctx_tys) body
+      | Constr.Unsafe.App _ _
+        => do_red ()
+      | Constr.Unsafe.Constant _ _
+        => do_red ()
+      | Constr.Unsafe.LetIn _ _ _
+        => do_red ()
+      | Constr.Unsafe.Case _ _ _ _ _
+        => do_red ()
+      | Constr.Unsafe.Proj _ _
+        => do_red ()
+      | _ => false
+      end.
+
+    Ltac2 rec template_ctx_to_list (template_ctx : constr) : constr list :=
+      lazy_match! template_ctx with
+      | tt => []
+      | (?arg, ?template_ctx')
+        => arg :: template_ctx_to_list template_ctx'
+      end.
+
+    Ltac2 rec value_ctx_to_list (value_ctx : constr) : (ident * constr   * constr  ) list
+      := lazy_match! value_ctx with
+         | var_context.nil => []
+         | @var_context.cons ?base_type ?var ?t ?rt ?v ?rv ?rest
+           => match Constr.Unsafe.kind v with
+              | Constr.Unsafe.Var c
+                => (c, rt, rv)
+              | _ => Control.zero (Invalid_argument (Some (fprintf "value_ctx_to_list: not a Var: %t (of type %t, mapped to %t : %t)" v t rv rt)))
+              end
+                :: value_ctx_to_list rest
+         end.
+
+    Ltac2 eval_cbv_delta_only (i : Std.reference list) (c : constr) :=
+      Std.eval_cbv { Std.rBeta := false; Std.rMatch := false;
+                     Std.rFix := false; Std.rCofix := false;
+                     Std.rZeta := false; Std.rDelta := false;
+                     Std.rConst := i }
+                   c.
+
+    Ltac2 Type exn ::= [ Template_ctx_mismatch (constr, constr, constr) ].
+    Ltac2 plug_template_ctx (ctx_tys : binder list) (f : constr) (template_ctx : constr list) :=
+      Reify.debug_enter_plug_template_ctx "expr.plug_template_ctx" f template_ctx;
+      let rec mkargs (ctx_tys : binder list) (f_ty : constr) (template_ctx : constr list) :=
+        match template_ctx with
+        | [] => (1, [], (fun body => body))
+        | arg :: template_ctx'
+          => match Constr.Unsafe.kind f_ty with
+             | Constr.Unsafe.Cast f_ty _ _
+               => mkargs ctx_tys f_ty template_ctx
+             | Constr.Unsafe.Prod b f_ty
+               => if is_template_parameter ctx_tys (Constr.Binder.type b)
+                  then let (rel_base, args, close) := mkargs (b :: ctx_tys) f_ty template_ctx' in
+                       (rel_base, arg :: args, close)
+                  else let (rel_base, args, close) := mkargs (b :: ctx_tys) f_ty template_ctx' in
+                       let rel_base := Int.add rel_base 1 in
+                       (rel_base, mkRel rel_base :: args,
+                         (fun body => mkLambda b (close body)))
+             | _ => let f_ty' := Std.eval_hnf f_ty in
+                    if Constr.equal f_ty f_ty'
+                    then Control.throw (Template_ctx_mismatch f f_ty arg)
+                    else mkargs ctx_tys f_ty' template_ctx
+             end
+        end in
+
+      match template_ctx with
+      | [] => f
+      | _::_
+        => let (_, args, close) := mkargs ctx_tys (Constr.type f) template_ctx in
+           close (mkApp f args)
+      end.
+
+    Ltac2 rec reify_preprocess (ctx_tys : binder list) (term : constr) : constr :=
+      Reify.debug_enter_reify_preprocess "expr.reify_preprocess" term;
+      let reify_preprocess := reify_preprocess ctx_tys in
+      let thunk
+        :=
+        let (cst, cTrue) := let term := '(I : True) in
+                            match Constr.Unsafe.kind term with
+                            | Constr.Unsafe.Cast _ cst cTrue => (cst, cTrue)
+                            | _ => Control.throw (Reification_panic (fprintf "Anomaly: reify_preprocess: %t is not a Cast!" term))
+                            end in
+        fun (v : constr)
+        => let v := Constr.Unsafe.make (Constr.Unsafe.Cast v cst cTrue) in
+
+           let v := '(match $v return unit -> True with x => fun _ : unit => x end) in
+           match Constr.Unsafe.kind v with
+           | Constr.Unsafe.Lambda x v
+             => match Constr.Unsafe.kind v with
+                | Constr.Unsafe.Cast v _ _ => mkLambda x v
+                | _ => Control.throw (Reification_panic (fprintf "Anomaly: reify_preprocess: %t is not a Cast (from under a Lambda)!" v))
+                end
+           | _ => Control.throw (Reification_panic (fprintf "Anomaly: reify_preprocess: %t is not a Lambda!" v))
+           end in
+      match Constr.Unsafe.kind term with
+      | Constr.Unsafe.Cast x _ _
+        => Reify.debug_enter_reify_case "expr.reify_preprocess" "Cast" term;
+           reify_preprocess x
+      | Constr.Unsafe.LetIn x a b
+        => Reify.debug_enter_reify_case "expr.reify_preprocess" "LetIn" term;
+           let v_lam () := mkApp (mkLambda x b) [a] in
+           let v_inlined () := Constr.Unsafe.substnl [a] 0 b in
+           let tx := Constr.Binder.type x in
+           if is_template_parameter ctx_tys tx
+           then
+             reify_preprocess (v_inlined ())
+           else
+             let v := v_lam () in
+             match Constr.Unsafe.check v   with
+             | Val v => reify_preprocess v
+             | Err err
+               => match Constr.Unsafe.check term with
+                  | Val _
+                    => Reify.debug_typing_failure "expr.reify_preprocess" v err;
+                       reify_preprocess (v_inlined ())
+                  | Err err'
+                    =>
+                      Reify.debug_typing_failure_assume_well_typed "expr.reify_preprocess" v term ctx_tys tx;
+                      reify_preprocess v
+                  end
+           end
+      | Constr.Unsafe.Case cinfo ret_ty cinv x branches
+        => Reify.debug_enter_reify_case "expr.reify_preprocess" "Case" term;
+           match Constr.Unsafe.kind ret_ty with
+           | Constr.Unsafe.Lambda xb ret_ty
+             => let ty := Constr.Unsafe.substnl [x] 0 ret_ty in
+                lazy_match! Constr.Binder.type xb with
+                | bool
+                  => Reify.debug_enter_reify_case "expr.reify_preprocess" "Case:bool" term;
+                     reify_preprocess (mkApp '@Thunked.bool_rect [ty; thunk (Array.get branches 0); thunk (Array.get branches 1); x])
+                | prod ?a ?b
+                  => Reify.debug_enter_reify_case "expr.reify_preprocess" "Case:prod" term;
+                     reify_preprocess (mkApp '@prod_rect_nodep [a; b; ty; Array.get branches 0; x])
+                | list ?t
+                  => Reify.debug_enter_reify_case "expr.reify_preprocess" "Case:list" term;
+                     reify_preprocess (mkApp '@Thunked.list_case [t; ty; thunk (Array.get branches 0); Array.get branches 1; x])
+                | option ?t
+                  => Reify.debug_enter_reify_case "expr.reify_preprocess" "Case:option" term;
+                     reify_preprocess (mkApp '@Thunked.option_rect [t; ty; Array.get branches 0; thunk (Array.get branches 1); x])
+                | _ => Reify.debug_enter_reify_preprocess "expr.reify_preprocess_extra" term;
+                       reify_preprocess_extra ctx_tys term
+                end
+           | _ => printf "Warning: non-Lambda case return type %t in %t" ret_ty term;
+                  Reify.debug_enter_reify_preprocess "expr.reify_preprocess_extra" term;
+                  reify_preprocess_extra ctx_tys term
+           end
+      | _ => Reify.debug_enter_reify_preprocess "expr.reify_preprocess_extra" term;
+             reify_preprocess_extra ctx_tys term
+      end.
+
+    Ltac2 rec reify_ident_preprocess (ctx_tys : binder list) (term : constr) : constr :=
+      Reify.debug_enter_reify_ident_preprocess "expr.reify_ident_preprocess" term;
+      let reify_ident_preprocess := reify_ident_preprocess ctx_tys in
+      let handle_eliminator (motive : constr) (rect_arrow_nodep : constr option) (rect_nodep : constr option) (rect : constr) (mid_args : constr list) (cases_to_thunk : constr list)
+        := let mkApp_thunked_cases f pre_args
+             := Control.with_holes
+                  (fun () => mkApp f (List.append pre_args (List.append mid_args (List.map (fun arg => open_constr:(fun _ => $arg)) cases_to_thunk))))
+                  (fun fv => match Constr.Unsafe.check fv with
+                             | Val fv => fv
+                             | Err err => Control.throw err
+                             end) in
+           let opt_recr (thunked : bool) orect args :=
+             match orect with
+             | Some rect => (reify_ident_preprocess,
+                              if thunked
+                              then mkApp_thunked_cases rect args
+                              else mkApp rect (List.append args (List.append mid_args cases_to_thunk)))
+             | None => Control.zero Match_failure
+             end in
+           let (f, x) := match! (eval cbv beta in $motive) with
+                         | fun _ => ?a -> ?b
+                           => opt_recr false rect_arrow_nodep [a; b]
+                         | fun _ => ?t
+                           => opt_recr true rect_nodep [t]
+                         | ?t'
+                           => if Constr.equal motive t'
+                              then (reify_ident_preprocess_extra ctx_tys, term)
+                              else opt_recr false (Some rect) [t']
+                         end in
+           f x in
+      lazy_match! term with
+      | Datatypes.S => reify_ident_preprocess 'Nat.succ
+      | @Datatypes.prod_rect ?a ?b ?t0
+        => handle_eliminator t0 None (Some '(@prod_rect_nodep $a $b)) '(@Datatypes.prod_rect $a $b) [] []
+      | @Datatypes.bool_rect ?t0 ?ptrue ?pfalse
+        => handle_eliminator t0 None (Some '@Thunked.bool_rect) '(@Datatypes.bool_rect) [] [ptrue; pfalse]
+      | @Datatypes.nat_rect ?t0 ?p0
+        => handle_eliminator t0 (Some '@nat_rect_arrow_nodep) (Some '@Thunked.nat_rect) '(@Datatypes.nat_rect) [] [p0]
+      | ident.eagerly (@Datatypes.nat_rect) ?t0 ?p0
+        => handle_eliminator t0 (Some '(ident.eagerly (@nat_rect_arrow_nodep))) (Some '(ident.eagerly (@Thunked.nat_rect))) '(ident.eagerly (@Datatypes.nat_rect)) [] [p0]
+      | @Datatypes.list_rect ?a ?t0 ?pnil
+        => handle_eliminator t0 (Some '(@list_rect_arrow_nodep $a)) (Some '(@Thunked.list_rect $a)) '(@Datatypes.list_rect $a) [] [pnil]
+      | ident.eagerly (@Datatypes.list_rect) ?a ?t0 ?pnil
+        => handle_eliminator t0 (Some '(ident.eagerly (@list_rect_arrow_nodep) $a)) (Some '(ident.eagerly (@Thunked.list_rect) $a)) '(ident.eagerly (@Datatypes.list_rect) $a) [] [pnil]
+      | @ListUtil.list_case ?a ?t0 ?pnil
+        => handle_eliminator t0 None (Some '(@Thunked.list_case $a)) '(@ListUtil.list_case $a) [] [pnil]
+      | @Datatypes.option_rect ?a ?t0 ?psome ?pnone
+        => handle_eliminator t0 None (Some '(@Thunked.option_rect $a)) '(@Datatypes.option_rect $a) [psome] [pnone]
+      | ident.eagerly (?f ?x)
+        => reify_ident_preprocess '(ident.eagerly $f $x)
+      | ?term => reify_ident_preprocess_extra ctx_tys term
+      end.
+
+    Ltac2 Type exn ::= [ Reify_ident_cps_failed ].
+    Ltac wrap_reify_ident_cps reify_ident_cps idc :=
+      reify_ident_cps
+        idc
+        ltac:(fun idc => refine idc)
+               ltac:(fun _ => ltac2:(Control.zero Reify_ident_cps_failed)).
+    Ltac2 reify_ident_opt_of_cps (wrapped_reify_ident_cps : Ltac1.t) : binder list -> constr -> constr option
+      := fun ctx_tys idc
+         => match Control.case (fun () => Ltac1.apply_c wrapped_reify_ident_cps [idc]) with
+            | Val v => let (v, _) := v in Some v
+            | Err err
+              => match err with
+                 | Reify_ident_cps_failed => None
+                 | _ => Control.zero err
+                 end
+            end.
+
+    Ltac2 Type exn ::= [ Not_headed_by_a_constant_under_binders (Constr.Unsafe.kind) ].
+    Ltac2 rec head_reference_under_binders (term : constr) : (Std.reference * constr) result :=
+      let k := Constr.Unsafe.kind term in
+      match k with
+      | Constr.Unsafe.App f args => head_reference_under_binders f
+      | Constr.Unsafe.Cast c _ _ => head_reference_under_binders c
+      | Constr.Unsafe.Lambda _ body => head_reference_under_binders body
+      | Constr.Unsafe.Constant c inst => Val (Std.ConstRef c, term)
+      | Constr.Unsafe.Var id => Val (Std.VarRef id, term)
+      | _ => Err (Not_headed_by_a_constant_under_binders k)
+      end.
+
+    Module Export Cache.
+      Ltac2 Type elem := { name : ident ; rterm : constr }.
+
+      Ltac2 Type t := (Fresh.Free.t * (constr * elem) list) ref.
+      Ltac2 init (avoid : constr) : t
+        := let avoid := Fresh.Free.union (Fresh.Free.of_constr avoid) (Fresh.Free.of_goal ()) in
+           { contents := (avoid, []) }.
+      Ltac2 find_opt (term : constr) (cache : t) : elem option
+        := let (_, cache) := cache.(contents) in
+           List.assoc_opt Constr.equal_nounivs term cache.
+      Ltac2 Type exn ::= [ Cache_contains_element (constr, constr, constr, elem) ].
+      Ltac2 add (head_constant : constr) (term : constr) (rterm : constr) (cache : t) : ident
+        := let (avoid, known) := cache.(contents) in
+           match List.assoc_opt Constr.equal_nounivs term known with
+           | Some e => Control.throw (Cache_contains_element head_constant term rterm e)
+
+           | None
+             => let id := Fresh.fresh avoid (Ident.reified_of_constr head_constant) in
+                let avoid := Fresh.Free.union avoid (Fresh.Free.of_ids [id]) in
+                let e := { name := id ; rterm := rterm } in
+                (cache.(contents) := (avoid, (term, e) :: known));
+                id
+           end.
+      Ltac2 elements (cache : t) : (constr * elem) list
+        := let (_, cache) := cache.(contents) in
+           cache.
+
+      Ltac2 to_thunked_binder_context (cache : t) : (unit -> binder) list
+        := List.rev (List.map (fun (_, e) () => Constr.Binder.make (Some (e.(Cache.name))) (Constr.type (e.(Cache.rterm)))) (Cache.elements cache)).
+    End Cache.
+
+    Ltac2 rec reify_in_context_opt (base_type : constr) (ident : constr) (reify_base_type : constr -> constr) (reify_ident_opt : binder list -> constr -> constr option) (var : constr) (term : constr) (ctx_tys : binder list) (var_ty_ctx : constr list) (value_ctx : (ident * constr   * constr  ) list) (template_ctx : constr list) (cache : Cache.t) : constr option :=
+      let reify_rec_gen term ctx_tys var_ty_ctx template_ctx := reify_in_context_opt base_type ident reify_base_type reify_ident_opt var term ctx_tys var_ty_ctx value_ctx template_ctx cache in
+      let reify_rec term := reify_rec_gen term ctx_tys var_ty_ctx template_ctx in
+      let reify_rec_not_head term := reify_rec_gen term ctx_tys var_ty_ctx [] in
+      let debug_check e
+        := Reify.debug_Constr_check
+             "expr.reify_in_context" (fun e e' err => Message.of_exn err) var
+             (Cache.to_thunked_binder_context cache)
+             var_ty_ctx e in
+      let reify_ident_opt term
+        := Option.map (fun idc => debug_check (mkApp '(@Ident) [base_type; ident; var; open_constr:(_); idc]))
+                      (reify_ident_opt ctx_tys term) in
+      Reify.debug_enter_reify "expr.reify_in_context" term;
+      Reify.debug_print_args
+        "expr.reify_in_context"
+        (fun ()
+         => fprintf
+              "{ base_type= %t ; ident = %t ; var = %t ; term = %t ; ctx_tys = %a ; var_ty_ctx = %a ; value_ctx = %a ; template_ctx = %a }"
+              base_type ident var term
+              (fun () => Message.of_list (fun v => fprintf "%a : %t" (fun () a => a) (match Constr.Binder.name v with Some n => Message.of_ident n | None => Message.of_string "" end) (Constr.Binder.type v))) ctx_tys
+              (fun () => Message.of_list Message.of_constr) var_ty_ctx
+              (fun () => Message.of_list (fun (id, t, v) => fprintf "(%I, %t, %t)" id t v)) value_ctx
+              (fun () => Message.of_list Message.of_constr) template_ctx) ();
+      let found :=
+        match Constr.Unsafe.kind term with
+        | Constr.Unsafe.Rel n
+          => Reify.debug_enter_reify_case "expr.reify_in_context" "Rel" term;
+             let rt := List.nth var_ty_ctx (Int.sub n 1) in
+             Some (debug_check (mkApp ('@Var) [base_type; ident; var; rt; term]))
+        | Constr.Unsafe.Var id
+          => Reify.debug_enter_reify_case "expr.reify_in_context" "Var" term;
+             Reify.debug_fine_grained "expr.reify_in_context" (fun () => fprintf "Searching in %a" (fun () => Message.of_list (fun (id', x, y) => fprintf "(%I, %t, %t)" id' x y)) value_ctx);
+             Option.bind
+               (List.find_opt (fun (id', _, _) => Ident.equal id' id) value_ctx)
+               (fun (_, rt, rv)
+                => Some (debug_check (mkApp ('@Var) [base_type; ident; var; rt; rv])))
+        | _ => None
+        end in
+      let res :=
+        match found with
+        | Some v => Some v
+        | None
+          => Reify.debug_enter_reify_case "expr.reify_in_context" "preprocess" term;
+             let term := reify_preprocess ctx_tys term in
+             Reify.debug_enter_reify_after_preprocess "expr.reify_in_context" term;
+             let found :=
+               match Constr.Unsafe.kind term with
+               | Constr.Unsafe.Cast term _ _
+                 => Reify.debug_enter_reify_case "expr.reify_in_context" "Cast" term;
+                    Some (reify_rec term)
+               | Constr.Unsafe.Lambda x f
+                 => Some
+                      (Reify.debug_enter_reify_case "expr.reify_in_context" "Lambda" term;
+                       let t := Constr.Binder.type x in
+                       if is_template_parameter ctx_tys t
+                       then match template_ctx with
+                            | arg :: template_ctx
+                              => Reify.debug_enter_reify_case "expr.reify_in_context" "substnl template arg" term;
+                                 reify_rec_gen (Constr.Unsafe.substnl [arg] 0 f) ctx_tys var_ty_ctx template_ctx
+                            | []
+                              => Control.throw (Reification_panic (fprintf "Empty template_ctx when reifying template binder of type %t" t))
+                            end
+                       else
+                         (Reify.debug_enter_reify_case "expr.reify_in_context" "λ body" term;
+                          let rt := type.reify reify_base_type base_type t in
+                          let rx := Constr.Binder.make (Constr.Binder.name x) (debug_check (mkApp var [rt])) in
+                          Option.map
+                            (fun rf => debug_check (mkApp ('@Abs) [base_type; ident; var; rt; open_constr:(_); mkLambda rx rf]))
+                            (reify_rec_gen f (x :: ctx_tys) (rt :: var_ty_ctx) template_ctx)))
+               | Constr.Unsafe.App c args
+                 => Reify.debug_enter_reify_case "expr.reify_in_context" "App (check LetIn)" term;
+                    if Constr.equal_nounivs c '@Let_In
+                    then if Int.equal (Array.length args) 4
+                         then Reify.debug_enter_reify_case "expr.reify_in_context" "LetIn" term;
+                              let (ta, tb, a, b) := (Array.get args 0, Array.get args 1, Array.get args 2, Array.get args 3) in
+                              Some
+                                (Option.bind
+                                   (reify_rec a)
+                                   (fun ra
+                                    => Option.bind
+                                         (reify_rec b)
+                                         (fun rb
+                                          => lazy_match! rb with
+                                             | @Abs _ _ _ ?s ?d ?f
+                                               => Some (debug_check (mkApp ('@LetIn) [base_type; ident; var; s; d; ra; f]))
+                                             | ?rb => Control.throw (Reification_panic (fprintf "Invalid non-Abs function reification of %t to %t" b rb))
+                                             end)))
+                         else None
+                    else None
+               | _ => None
+               end in
+             match found with
+             | Some res => res
+             | None
+               => Reify.debug_enter_reify_case "expr.reify_in_context" "ident_preprocess" term;
+                  let term := reify_ident_preprocess ctx_tys term in
+                  Reify.debug_enter_reify_ident_after_preprocess "expr.reify_in_context" term;
+                  match reify_ident_opt term with
+                  | Some res => Some res
+                  | None
+                    => Reify.debug_enter_reify_case "expr.reify_in_context" "not ident" term;
+                       lazy_match! term with
+                       | ?f ?x
+                         =>
+                           Reify.debug_enter_reify_case "expr.reify_in_context" "App" term;
+                           let x_is_template_arg
+                             := match Control.case (fun () => Constr.type x) with
+                                | Val ty
+                                  => let (ty, _) := ty in
+                                     is_template_parameter ctx_tys ty
+                                | Err err
+                                  => Reify.debug_typing_failure "expr.reify_in_context" x err;
+                                     false
+                                end in
+                           if x_is_template_arg
+                           then
+                             Reify.debug_enter_reify_case "expr.reify_in_context" "accumulate template" term;
+                             reify_rec_gen f ctx_tys var_ty_ctx (x :: template_ctx)
+                           else
+                             (Reify.debug_enter_reify_case "expr.reify_in_context" "App (non-template)" term;
+                              Option.bind
+                                (reify_rec_gen x ctx_tys var_ty_ctx [])
+                                (fun rx
+                                 => Option.bind
+                                      (reify_rec_gen f ctx_tys var_ty_ctx template_ctx)
+                                      (fun rf
+                                       => Some (debug_check (mkApp '@App [base_type; ident; var; open_constr:(_); open_constr:(_); rf; rx])))))
+                       | _
+                         => Reify.debug_enter_reify_case "expr.reify_in_context" "pre-plug template_ctx" term;
+                            let term := plug_template_ctx ctx_tys term template_ctx in
+                            Reify.debug_enter_reify_case "expr.reify_in_context" "reify_ident_opt" term;
+                            match reify_ident_opt term with
+                            | Some res => Some res
+                            | None
+                              => match Cache.find_opt term cache with
+                                 | Some id => Some (mkVar (id.(Cache.name)))
+                                 | None
+                                   => match head_reference_under_binders term with
+                                      | Val c
+                                        => let (c, h) := c in
+                                           Reify.debug_enter_reify_case "expr.reify_in_context" "App Constant (unfold)" term;
+                                           let term' := eval_cbv_delta_only [c] term in
+                                           if Constr.equal term term'
+                                           then printf "Unrecognized (non-unfoldable) term: %t" term;
+                                                None
+                                           else
+                                             match reify_rec term' with
+                                             | Some rv
+                                               => let id := Cache.add h term rv cache in
+                                                  Some (mkVar id)
+                                             | None
+                                               => printf "Failed to reify %t via unfolding to %t" term term';
+                                                  None
+                                             end
+                                      | Err err => printf "Unrecognized (non-constant-headed) term: %t (%a)" term (fun () => Message.of_exn) err;
+                                                   None
+                                      end
+                                 end
+                            end
+                       end
+                  end
+             end
+        end in
+      match res with
+      | Some res
+        => Reify.debug_leave_reify_success "expr.reify_in_context" term res;
+           Some res
+      | None
+        => Reify.debug_leave_reify_failure "expr.reify_in_context" term;
+           None
+      end.
+
+    Ltac2 reify_let_bind_cache (rterm : constr) (cache : Cache.t) : constr :=
+      Reify.debug_profile
+        "reify_let_bind_cache"
+        (fun ()
+         => let rec aux (elems : (_ * Cache.elem) list)
+              := match elems with
+                 | [] => rterm
+                 | elem :: elems
+                   => let (_, elem) := elem in
+                      let (name, rv) := (elem.(Cache.name), elem.(Cache.rterm)) in
+                      let rty := Constr.type rv in
+                      let x := Constr.Binder.make (Some name) rty in
+                      Reify.debug_let_bind "reify_let_bind_cache" name rty rv;
+                      let rterm := Constr.in_context
+                                     name rty (fun () => let v := aux elems in Control.refine (fun () => v)) in
+                      let default () :=
+                        printf "Warning: reify_let_bind_cache: not a lambda: %t" rterm;
+                        rterm in
+                      match Constr.Unsafe.kind rterm with
+                      | Constr.Unsafe.Lambda x f
+                        => mkLetIn x rv f
+                      | _ => default ()
+                      end
+                 end in
+            aux (List.rev (Cache.elements cache))).
+
+    Ltac2 reify_in_context (base_type : constr) (ident : constr) (reify_base_type : constr -> constr) (reify_ident_opt : binder list -> constr -> constr option) (var : constr) (term : constr) (ctx_tys : binder list) (var_ty_ctx : constr list) (value_ctx : (ident * constr   * constr  ) list) (template_ctx : constr list) (cache : Cache.t option) : constr :=
+      let cache := match cache with
+                   | Some cache => cache
+                   | None => Cache.init term
+                   end in
+      match Reify.debug_profile
+              "reify_in_context_opt"
+              (fun () => reify_in_context_opt base_type ident reify_base_type reify_ident_opt var term ctx_tys var_ty_ctx value_ctx template_ctx cache)
+      with
+      | Some v => reify_let_bind_cache v cache
+      | None => Control.zero (Reification_failure (fprintf "Failed to reify: %t" term))
+      end.
+
+    #[deprecated(since="8.15",note="Use Ltac2 instead.")]
+     Ltac reify_in_context base_type ident reify_base_type reify_ident var term value_ctx template_ctx :=
+      let f := ltac2:(base_type ident reify_base_type reify_ident var term value_ctx template_ctx
+                      |- let template_ctx := Ltac1.get_to_constr "template_ctx" template_ctx in
+                         let value_ctx := Ltac1.get_to_constr "value_ctx" value_ctx in
+                         Reify.debug_print_args
+                           "ltac:expr.reify_in_context"
+                           (fun () => fprintf "{ template_ctx = %t ; value_ctx = %t }" template_ctx value_ctx)
+                           ();
+                         let template_ctx := template_ctx_to_list template_ctx in
+                         let value_ctx := value_ctx_to_list value_ctx in
+                         let reify_base_type := fun ty => Ltac1.apply_c reify_base_type [ty] in
+                         let reify_ident_opt := reify_ident_opt_of_cps reify_ident in
+                         Control.refine (fun () => reify_in_context (Ltac1.get_to_constr "base_type" base_type) (Ltac1.get_to_constr "ident" ident) reify_base_type reify_ident_opt (Ltac1.get_to_constr "var" var) (Ltac1.get_to_constr "term" term) [] [] value_ctx template_ctx None)) in
+      constr:(ltac:(f base_type ident reify_base_type ltac:(wrap_reify_ident_cps reify_ident) constr:(var) term value_ctx template_ctx)).
+
+Ltac2 Notation "strategy:(" s(strategy) ")" := s.
+Module Export IdentifiersBasicGenerate.
+Import Ltac2.Bool.
+Module Export Compilers.
+
+  Module Export Basic.
+    Export IdentifiersBasicLibrary.Compilers.Basic.
+
+    Module Import Tactics.
+
+      Ltac2 reify_base_via_list_opt (base : constr) (base_interp : constr) (all_base_and_interp : constr) :=
+        let all_base_and_interp := Std.eval_hnf all_base_and_interp in
+        let all_base_and_interp := Std.eval_cbv (strategy:(beta)) all_base_and_interp in
+        fun ty
+        => let ty := Std.eval_cbv (strategy:(beta)) ty in
+           Reify.debug_enter_reify "reify_base_via_list" ty;
+           let rty := match! all_base_and_interp with
+                      | context[Datatypes.cons (?rty, ?ty')]
+                        => if Constr.equal_nounivs ty ty'
+                           then Some rty
+                           else Control.zero Match_failure
+                      | _ => None
+                      end in
+           match rty with
+           | Some rty => Some rty
+           | None
+             =>
+               match! ty with
+               | ?base_interp' ?t
+                 => if Constr.equal_nounivs base_interp' base_interp
+                    then Some t
+                    else Control.zero Match_failure
+               | @base.interp ?base' ?base_interp' (@base.type.type_base ?base' ?t)
+                 => if Constr.equal_nounivs base_interp' base_interp && Constr.equal_nounivs base base
+                    then Some t
+                    else Control.zero Match_failure
+               | @type.interp (base.type ?base') (@base.interp ?base' ?base_interp') (@Compilers.type.base (base.type ?base') (@base.type.type_base ?base' ?t))
+                 => if Constr.equal_nounivs base_interp' base_interp && Constr.equal_nounivs base base
+                    then Some t
+                    else Control.zero Match_failure
+               | _ => None
+               end
+           end.
+      Ltac2 reify_base_via_list (base : constr) (base_interp : constr) (all_base_and_interp : constr) (ty : constr) : constr :=
+        match reify_base_via_list_opt base base_interp all_base_and_interp ty with
+        | Some res => res
+        | None => Control.zero (Reification_failure (fprintf "Unrecognized type: %t" ty))
+        end.
+
+      Ltac2 reify_base_type_via_list (base : constr) (base_interp : constr) (all_base_and_interp : constr) : constr -> constr :=
+        Compilers.base.reify base (reify_base_via_list base base_interp all_base_and_interp).
+
+      Ltac2 rec is_recursively_constructor_or_literal (term : constr) : bool :=
+        match Constr.Unsafe.kind term with
+        | Constr.Unsafe.Cast term _ _ => is_recursively_constructor_or_literal term
+        | Constr.Unsafe.App f args
+          => if Constr.equal_nounivs f '@ident.literal
+             then true
+             else
+               is_recursively_constructor_or_literal f
+               && Array.for_all is_recursively_constructor_or_literal args
+        | _ => Constr.is_constructor term
+        end.
+
+      Ltac2 try_reify_literal (try_reify_base : constr -> constr option) (ident_Literal : constr) (term : constr) : constr option :=
+        if is_recursively_constructor_or_literal term
+        then
+          Option.bind
+            (try_reify_base (Constr.type term))
+            (fun rt => Some (mkApp ident_Literal [rt; term]))
+        else None.
+
+      Ltac2 rec get_head_with_eagerly_then_plug_reified_types (reify_base_type : constr -> constr) (lookup : constr -> constr option) (term : constr) : constr option :=
+        let recr := get_head_with_eagerly_then_plug_reified_types reify_base_type lookup in
+        lazy_match! term with
+        | ident.eagerly ?f => lookup term
+        | ?f ?x
+          => Option.bind
+               (recr f)
+               (fun rf
+                => lazy_match! Constr.type rf with
+                   | forall t, _
+                     => let rx := reify_base_type x in
+                        Some (mkApp rf [rx])
+                   | _ => None
+                   end)
+        | _ => lookup term
+        end.
+      Ltac2 reify_ident_from_interp (ident_interp : constr) (term : constr) : constr option :=
+
+        lazy_match! term with
+        | ?ident_interp' _ ?idc
+          => if Constr.equal_nounivs ident_interp ident_interp'
+             then Some idc
+             else None
+        | _ => None
+        end.
+
+      Ltac2 reify_ident_via_list_opt (base : constr) (base_interp : constr) (all_base_and_interp : constr) (all_ident_and_interp : constr) (ident_interp : constr) : binder list -> constr -> constr option :=
+        let all_ident_and_interp := Std.eval_hnf all_ident_and_interp in
+        let try_reify_base := reify_base_via_list_opt base base_interp all_base_and_interp in
+        let reify_base := reify_base_via_list base base_interp all_base_and_interp in
+        let reify_base_type := reify_base_type_via_list base base_interp all_base_and_interp in
+        let ident_Literal := let idc := '(@ident.literal) in
+                             let found := match! all_ident_and_interp with
+                                          | context[GallinaAndReifiedIdentList.cons ?ridc ?idc']
+                                            => if Constr.equal_nounivs idc idc'
+                                               then Some ridc
+                                               else Control.zero Match_failure
+                                          | _ => None
+                                          end in
+                             match found with
+                             | Some ridc => ridc
+                             | None => Control.throw (Reification_panic (fprintf "Missing reification for %t in %t" idc all_ident_and_interp))
+                             end in
+        fun ctx_tys term
+        => Reify.debug_enter_reify "reify_ident_via_list_opt" term;
+           Reify.debug_enter_reify_case "reify_ident_via_list_opt" "literal?" term;
+           let as_lit := try_reify_literal try_reify_base ident_Literal term in
+           let res :=
+             match as_lit with
+             | Some ridc
+               => Reify.debug_enter_reify_case "reify_ident_via_list_opt" "literal✓" term;
+                  Some ridc
+             | None
+               => Reify.debug_enter_reify_case "reify_ident_via_list_opt" "interp?" term;
+                  let as_interped := reify_ident_from_interp ident_interp term in
+                  match as_interped with
+                  | Some idc
+                    => Reify.debug_enter_reify_case "reify_ident_via_list_opt" "interp✓" term;
+                       Some idc
+                  | None
+                    => Reify.debug_enter_reify_case "reify_ident_via_list_opt" "head eagerly?" term;
+                       get_head_with_eagerly_then_plug_reified_types
+                         reify_base_type
+                         (fun idc
+                          => Reify.debug_enter_lookup_ident "reify_ident_via_list_opt" idc;
+                             let found := match! all_ident_and_interp with
+                                          | context[GallinaAndReifiedIdentList.cons ?ridc ?idc']
+                                            => if Constr.equal_nounivs idc idc'
+                                               then Some ridc
+                                               else Control.zero Match_failure
+                                          | _ => None
+                                          end in
+                             match found with
+                             | Some ridc
+                               => Reify.debug_leave_lookup_ident_success "reify_ident_via_list_opt" idc ridc;
+                                  Some ridc
+                             | None
+                               => Reify.debug_leave_lookup_ident_failure "reify_ident_via_list_opt" idc all_ident_and_interp;
+                                  None
+                             end)
+                         term
+                  end
+             end in
+           match res with
+           | Some res
+             => Reify.debug_leave_reify_success "reify_ident_via_list_opt" term res;
+                Some res
+           | None
+             => Reify.debug_leave_reify_normal_failure "reify_ident_via_list_opt" term;
+                None
+           end.
+
+      Ltac2 call_with_base_via_reify_package (tac : constr -> constr -> constr -> 'a) (reify_pkg : constr) : 'a :=
+        let pkgT := Constr.type reify_pkg in
+        let exprInfo := lazy_match! Std.eval_hnf pkgT with @GoalType.ExprReifyInfoT ?exprInfo => Std.eval_hnf exprInfo end in
+        let exprReifyInfo := Std.eval_hnf reify_pkg in
+        lazy_match! exprInfo with
+        | {| Classes.base := ?base
+             ; Classes.base_interp := ?base_interp |}
+          => lazy_match! exprReifyInfo with
+             | {| GoalType.all_base_and_interp := ?all_base_and_interp
+                  ; GoalType.all_ident_and_interp := ?all_ident_and_interp |}
+               => tac base base_interp all_base_and_interp
+             end
+        end.
+
+      Ltac2 reify_base_via_reify_package (reify_pkg : constr) : constr -> constr := call_with_base_via_reify_package reify_base_via_list reify_pkg.
+      Ltac2 reify_ident_via_reify_package_opt (reify_pkg : constr) : binder list -> constr -> constr option :=
+        let pkgT := Constr.type reify_pkg in
+        let exprInfo := lazy_match! Std.eval_hnf pkgT with @GoalType.ExprReifyInfoT ?exprInfo => Std.eval_hnf exprInfo end in
+        let exprReifyInfo := Std.eval_hnf reify_pkg in
+        lazy_match! exprInfo with
+        | {| Classes.base := ?base
+             ; Classes.base_interp := ?base_interp
+             ; Classes.ident_interp := ?ident_interp |}
+          => lazy_match! exprReifyInfo with
+             | {| GoalType.all_base_and_interp := ?all_base_and_interp
+                  ; GoalType.all_ident_and_interp := ?all_ident_and_interp |}
+               => reify_ident_via_list_opt base base_interp all_base_and_interp all_ident_and_interp ident_interp
+             end
+        end.
+      #[deprecated(since="8.15",note="Use Ltac2 instead.")]
+       Ltac reify_base_via_reify_package reify_pkg ty :=
+        let f := ltac2:(reify_pkg ty
+                        |- Control.refine (fun () => reify_base_via_reify_package (Ltac1.get_to_constr "reify_pkg" reify_pkg) (Ltac1.get_to_constr "ty" ty))) in
+        constr:(ltac:(f reify_pkg ty)).
+      #[deprecated(since="8.15",note="Use Ltac2 instead.")]
+       Ltac reify_ident_via_reify_package reify_pkg idc :=
+        let f := ltac2:(reify_pkg idc
+                        |- match reify_ident_via_reify_package_opt (Ltac1.get_to_constr "reify_pkg" reify_pkg) [] (Ltac1.get_to_constr "idc" idc) with
+                           | Some v => Control.refine (fun () => '(@Datatypes.Some _ $v))
+                           | None => Control.refine (fun () => '(@Datatypes.None unit))
+                           end) in
+        fun then_tac else_tac
+        => match constr:(ltac:(f reify_pkg idc)) with
+           | Datatypes.Some ?v => then_tac v
+           | Datatypes.None => else_tac ()
+           end.
+    End Tactics.
+
+    Module Export Tactic.
+      #[deprecated(since="8.15",note="Use Ltac2 instead.")]
+      Ltac reify_base_via_reify_package := Tactics.reify_base_via_reify_package.
+      #[deprecated(since="8.15",note="Use Ltac2 instead.")]
+      Ltac reify_ident_via_reify_package := Tactics.reify_ident_via_reify_package.
+Module Export Constr.
 Import Ltac2.Constr.
 
 Ltac2 is_sort(c: constr) :=
@@ -17,66 +1218,17 @@ Ltac2 is_sort(c: constr) :=
   | Unsafe.Sort _ => true
   | _ => false
   end.
-Module Export ProofsCommon.
-Import Rewriter.Language.Language.
-Import Rewriter.Language.IdentifiersBasicLibrary.
-Module Export Compilers.
-  Import Language.Compilers.
-  Import Language.Wf.Compilers.
-
-  Module Import RewriteRules.
-
-    Module Import WfTactics.
-      End WfTactics.
-
-    Module Export GoalType.
-      Import Compilers.Basic.GoalType.
-      Import Compilers.Classes.
-
-      Record VerifiedRewriter :=
-        {
-          exprInfo : ExprInfoT;
-          exprReifyInfo : ExprReifyInfoT;
-          optsT : Type;
-          default_opts : optsT;
-
-          Rewrite : forall (opts : optsT) {t} (e : expr.Expr (ident:=ident) t), expr.Expr (ident:=ident) t;
-          Wf_Rewrite : forall opts {t} e (Hwf : Wf e), Wf (@Rewrite opts t e);
-          Interp_Rewrite opts {t} e
-          : forall (Hwf : Wf e), expr.Interp ident_interp (@Rewrite opts t e) == expr.Interp ident_interp e;
-
-          check_wf : forall {t}, expr.Expr (ident:=ident) t -> bool;
-          generalize_for_wf : forall {t}, expr.Expr (ident:=ident) t -> expr.Expr (ident:=ident) t;
-          prove_Wf : forall {t} (e : expr.Expr (ident:=ident) t), (e = generalize_for_wf e /\ check_wf e = true) -> expr.Wf e;
-        }.
-
-      Definition VerifiedRewriter_with_ind_args
-                 (scraped_data : ScrapedData.t)
-                 (var_like_idents : InductiveHList.hlist)
-                 (base : Type)
-                 (ident : type.type (base.type base) -> Type)
-                 (raw_ident : Type)
-                 (pattern_ident : type.type (pattern.base.type base) -> Type)
-                 (include_interp : bool)
-                 (skip_early_reduction skip_early_reduction_no_dtree : bool)
-                 {rewrite_rulesT} (rules_proofs : PrimitiveHList.hlist (@snd bool Prop) rewrite_rulesT)
-        := VerifiedRewriter.
 Module Export Reify.
 Import Coq.ZArith.ZArith.
 Import Coq.FSets.FMapPositive.
 Import Coq.MSets.MSetPositive.
 Import Coq.Lists.List.
-Import Ltac2.Ltac2.
-Import Ltac2.Printf.
 Import Rewriter.Util.OptionList.
 Import Rewriter.Util.Bool.Reflect.
-Import Rewriter.Language.Reify.
 Import Rewriter.Util.Tactics.ConstrFail.
 Import Rewriter.Util.Tactics.Head.
-Import Rewriter.Util.Tactics2.Constr.Unsafe.MakeAbbreviations.
 Local Set Default Proof Mode "Classic".
 Module Export Compilers.
-  Export IdentifiersBasicGenerate.Compilers.
   Import invert_expr.
   Export Rewriter.Compilers.
 
@@ -267,9 +1419,9 @@ Defined.
                               printf "1";
                               let ty_ctx := debug_Constr_check (mkApp 'PositiveMap.add [base_type; cur_i; rt; ty_ctx]) in
                               printf "2";
-                              let t := debug_Constr_check (mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['_; cur_i; ty_ctx] ]) in
+                              let t := (*debug_Constr_check*) (mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['_; cur_i; ty_ctx] ]) in
                               printf "3";
-                              let p := debug_Constr_check (Constr.Unsafe.substnl [t] 0 p) in
+                              let p := (*debug_Constr_check*) (Constr.Unsafe.substnl [t] 0 p) in
                               printf "3";
                               let cur_i := Std.eval_vm None (mkApp 'Pos.succ [cur_i]) in
                               printf "4";
@@ -295,25 +1447,59 @@ Defined.
       Ltac push_side_conditions H side_conditions :=
         constr:(H :: side_conditions).
 
+      Ltac check_exact val :=
+        lazymatch goal with
+        | _
+          => lazymatch val with
+             | ?f ?x
+               => check_exact f; check_exact x
+             | fun x : ?T => ?f
+               => let f' := fresh in
+                  check_exact T;
+                  let __ := constr:(fun x : T
+                                    => match f return _ with
+                                       | f' => ltac:(let f := (eval cbv delta [f'] in f') in
+                                                     clear f';
+                                                     check_exact f;
+                                                     exact I)
+                                       end) in
+                  idtac
+             | _ => idtac
+             end;
+             idtac "checking:" val;
+             let __ := constr:(ltac:(exact val)) in
+             idtac
+        end.
+
+
       Ltac equation_to_parts' lem side_conditions :=
+        let __ := match goal with _ => idtac "equation_to_parts'" lem side_conditions end in
         lazymatch lem with
         | ?H -> ?P
-          => let __ := lazymatch type of H with
+          => let __ := match goal with _ => idtac H "->" P end in
+             let __ := lazymatch type of H with
                        | Prop => constr:(I)
                        | ?T => constr_fail_with ltac:(fun _ => fail 1 "Invalid non-Prop non-dependent hypothesis of type" H ":" T "when reifying a lemma of type" lem)
                        end in
+             let __ := match goal with _ => idtac "prop_to_bool" H end in
              let H := prop_to_bool H in
+             let __ := match goal with _ => idtac "push_side_conditions" H side_conditions end in
              let side_conditions := push_side_conditions H side_conditions in
              equation_to_parts' P side_conditions
         | forall x : ?T, ?P
-          => let P' := fresh in
+          => let __ := match goal with _ => idtac "forall" end in
+             let P' := fresh in
              constr:(
                fun x : T
                => match P return _ with
                   | P'
-                    => ltac:(let P := (eval cbv delta [P'] in P') in
+                    => ltac:(let __ := match goal with _ => idtac "P':" P' end in
+                             let P := (eval cbv delta [P'] in P') in
+                             let __ := match goal with _ => idtac "P:" P end in
                              clear P';
                              let res := equation_to_parts' P side_conditions in
+                             let __ := match goal with _ => idtac "eq res:" res end in
+                             let __ := match goal with _ => check_exact res end in
                              exact res)
                   end)
         | @eq ?T ?A ?B
@@ -717,8 +1903,11 @@ Defined.
           lem
           ltac:(
           fun ty_ctx cur_i lem
-          => let lem := equation_to_parts lem in
+          => let __ := match goal with _ => idtac "cont:" ty_ctx cur_i lem end in
+             let lem := equation_to_parts lem in
+             let __ := match goal with _ => idtac "reify_to_pattern_and_replacement_in_context" base reify_base base_interp base_interp_beq try_make_transport_base_cps ident reify_ident pident pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var gets_inlined should_do_again "constr:(1%positive)" lem "(@expr.var_context.nil (base.type base) (fun _ => positive)" end in
              let res := reify_to_pattern_and_replacement_in_context base reify_base base_interp base_interp_beq try_make_transport_base_cps ident reify_ident pident pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var gets_inlined should_do_again constr:(1%positive) lem (@expr.var_context.nil (base.type base) (fun _ => positive)) in
+             let __ := match goal with _ => idtac "reify under res:" res end in
              res).
 
       Ltac reify_list base reify_base base_interp base_interp_beq try_make_transport_base_cps ident reify_ident pident pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident pident_arg_types_of_typed_ident reflect_ident_iota var gets_inlined lems :=
@@ -866,88 +2055,6 @@ Admitted.
              | _ => constr_fail_with ltac:(fun _ => fail 1 "Invalid value for include_interp (must be either true or false):" include_interp)
              end
         end.
-Import Rewriter.Language.Pre.
-Import Rewriter.Util.ListUtil.
-Import ListNotations.
-
-Import Pre.RewriteRuleNotations.
-
-Lemma eval_list_rect_arrow
-  : forall A P Q N C ls v,
-    @list_rect_arrow_nodep A P Q N C ls v
-    = ident.eagerly (@list_rect_arrow_nodep) A P Q N C ls v.
-Admitted.
-
-Lemma eval_list_rect
-  : forall A P N C ls,
-    @Thunked.list_rect A P N C ls
-    = ident.eagerly (@Thunked.list_rect) A P N C ls.
-Admitted.
-
-Lemma eval_list_case_nil
-  : forall A P N C, @Thunked.list_case A P N C nil = N tt.
-Admitted.
-Lemma eval_list_case_cons
-  : forall A P N C x xs, @Thunked.list_case A P N C (x :: xs) = C x xs.
-Admitted.
-
-Lemma eval_list_nth_default
-  : forall A default ls n,
-    @List.nth_default A default ls ('n)
-    = ident.eagerly (@List.nth_default) A default ls ('n).
-Admitted.
-
-Import Rewriter.Util.PrimitiveProd.
-Global Instance eval_rect_list_rules : rules_proofs_for_eager_type list.
-exact (existT (PrimitiveHList.hlist (@Datatypes.snd bool Prop))
-              [Types.dont_do_again _; Types.dont_do_again _; Types.dont_do_again _; Types.dont_do_again _; Types.dont_do_again _]
-              (@eval_list_rect_arrow, (@eval_list_rect, (@eval_list_case_nil, (@eval_list_case_cons, (@eval_list_nth_default, tt)))))%primproj).
-Defined.
-Module Export RewriterBuildRegistry.
-Ltac make_scraped_data_with_args := Basic.ScrapeTactics.make_scrape_data.
-Ltac make_rules_proofs_with_args := Basic.ScrapeTactics.make_rules_proofsT_with_args.
-
-Lemma map_eagerly_rect
-  : forall A B f ls, @List.map A B f ls
-                     = (ident.eagerly (@list_rect) _ _)
-                         []
-                         (fun x xs map_f_xs => f x :: map_f_xs)
-                         ls.
-Admitted.
-
-Lemma app_eagerly_rect
-  : forall A xs ys, @List.app A xs ys
-                    = (ident.eagerly (@list_rect) _ _)
-                        ys (fun x xs app_xs_ys => x :: app_xs_ys) xs.
-Admitted.
-
-Lemma flat_map_rect
-  : forall A B f xs,
-    @List.flat_map A B f xs
-    = (list_rect (fun _ => _))
-        nil
-        (fun x _ flat_map_tl => f x ++ flat_map_tl)%list
-        xs.
-Admitted.
-
-  Definition rules_proofs :=
-    Eval cbv [projT2] in
-      projT2
-        (ltac:(RewriterBuildRegistry.make_rules_proofs_with_args)
-          : Pre.rules_proofsT_with_args
-              (Z.add_0_r
-                , (@Prod.fst_pair)
-                , (@Prod.snd_pair)
-                , map_eagerly_rect
-                , app_eagerly_rect
-                , eval_rect list
-                , do_again flat_map_rect)).
-
-  Definition scraped_data :=
-    (ltac:(cbv [projT1]; RewriterBuildRegistry.make_scraped_data_with_args)
-      : PreCommon.Pre.ScrapedData.t_with_args
-          rules_proofs
-            false).
   Inductive base : Set :=  base_Z : base | base_nat0 : base | base_bool0 : base.
   Inductive ident : forall _ : type.type (base.type.type base), Type :=
     ident_false0 : ident
@@ -4406,13 +5513,12 @@ Notation specs   :=
                                                  (flat_map_tl : list B) =>
                                                 @app B (f x) flat_map_tl) xs)))
                                       (@nil (prod bool Prop))))))))))))).
-
-  Goal ProofsCommon.Compilers.RewriteRules.GoalType.VerifiedRewriter_with_ind_args
-       scraped_data InductiveHList.nil base ident raw_ident pattern_ident   false   false   true rules_proofs.
-
-    Unset Ltac Backtrace.
-    Set Printing All.
-    Set Printing Depth 100000000.
+Goal True.
+  Set Ltac Backtrace.
+  Set Ltac2 Backtrace.
+  Set Debug "backtrace".
+  Ltac2 Set Pre.reify_debug_level := 100.
+  Set Printing Implicit.
     let reify_package := constr:(reify_package) in
     let exprInfo := constr:(exprInfo) in
     let exprExtraInfo := constr:(exprExtraInfo) in
@@ -4431,4 +5537,236 @@ Notation specs   :=
    let v := Reify.Compilers.RewriteRules.Make.Reify reify_base reify_ident exprInfo
                                                     exprExtraInfo pkg ident_is_var_like include_interp specs in
    idtac v.
+    (* the call to exact is with *)
+    (*
+(fun
+   (C : @base.interp base base_interp0
+          (@pattern.base.lookup_default base 1
+             (@PositiveMap.add (base.type base) 1%positive A
+                (PositiveMap.empty (base.type base)))) ->
+        Datatypes.list
+          (@base.interp base base_interp0
+             (@pattern.base.lookup_default base 1
+                (@PositiveMap.add (base.type base) 1%positive A
+                   (PositiveMap.empty (base.type base))))) ->
+        (@base.interp base base_interp0
+           (@pattern.base.lookup_default base 2
+              (@PositiveMap.add (base.type base) 2%positive P
+                 (@PositiveMap.add (base.type base) 1%positive A
+                    (PositiveMap.empty (base.type base))))) ->
+         @base.interp base base_interp0
+           (@pattern.base.lookup_default ?y2 3
+              (@PositiveMap.add (base.type base) 3%positive Q
+                 (@PositiveMap.add (base.type base) 2%positive P
+                    (@PositiveMap.add (base.type base) 1%positive A
+                       (PositiveMap.empty (base.type base))))))) ->
+        @base.interp base base_interp0
+          (@pattern.base.lookup_default base 2
+             (@PositiveMap.add (base.type base) 2%positive P
+                (@PositiveMap.add (base.type base) 1%positive A
+                   (PositiveMap.empty (base.type base))))) ->
+        @base.interp base base_interp0
+          (@pattern.base.lookup_default ?y2 3
+             (@PositiveMap.add (base.type base) 3%positive Q
+                (@PositiveMap.add (base.type base) 2%positive P
+                   (@PositiveMap.add (base.type base) 1%positive A
+                      (PositiveMap.empty (base.type base)))))))
+   (ls : Datatypes.list
+           (@base.interp base base_interp0
+              (@pattern.base.lookup_default base 1
+                 (@PositiveMap.add (base.type base) 1%positive A
+                    (PositiveMap.empty (base.type base))))))
+   (v : @base.interp base base_interp0
+          (@pattern.base.lookup_default base 2
+             (@PositiveMap.add (base.type base) 2%positive P
+                (@PositiveMap.add (base.type base) 1%positive A
+                   (PositiveMap.empty (base.type base)))))) =>
+ (@list_rect_arrow_nodep
+    (@base.interp base base_interp0
+       (@pattern.base.lookup_default base 1
+          (@PositiveMap.add (base.type base) 1%positive A
+             (PositiveMap.empty (base.type base)))))
+    (@base.interp base base_interp0
+       (@pattern.base.lookup_default base 2
+          (@PositiveMap.add (base.type base) 2%positive P
+             (@PositiveMap.add (base.type base) 1%positive A
+                (PositiveMap.empty (base.type base))))))
+    (@base.interp base base_interp0
+       (@pattern.base.lookup_default ?y2 3
+          (@PositiveMap.add (base.type base) 3%positive Q
+             (@PositiveMap.add (base.type base) 2%positive P
+                (@PositiveMap.add (base.type base) 1%positive A
+                   (PositiveMap.empty (base.type base))))))) N C ls v =
+  @ident.eagerly
+    (forall A0 P0 Q0 : Type,
+     (P0 -> Q0) ->
+     (A0 -> Datatypes.list A0 -> (P0 -> Q0) -> P0 -> Q0) ->
+     Datatypes.list A0 -> P0 -> Q0) (@list_rect_arrow_nodep)
+    (@base.interp base base_interp0
+       (@pattern.base.lookup_default base 1
+          (@PositiveMap.add (base.type base) 1%positive A
+             (PositiveMap.empty (base.type base)))))
+    (@base.interp base base_interp0
+       (@pattern.base.lookup_default base 2
+          (@PositiveMap.add (base.type base) 2%positive P
+             (@PositiveMap.add (base.type base) 1%positive A
+                (PositiveMap.empty (base.type base))))))
+    (@base.interp base base_interp0
+       (@pattern.base.lookup_default ?y2 3
+          (@PositiveMap.add (base.type base) 3%positive Q
+             (@PositiveMap.add (base.type base) 2%positive P
+                (@PositiveMap.add (base.type base) 1%positive A
+                   (PositiveMap.empty (base.type base))))))) N C ls v,
+ @Datatypes.nil bool))
+     *)
+    (* note the ?y2, which would already be solved by Constr.Unsafe.check *)
+(*
+Error:
+Anomaly
+"File "pretyping/evarsolve.ml", line 103, characters 9-15: Assertion failed."
+Please report at http://coq.inria.fr/bugs/.
+Raised at Evarsolve.normalize_evar in file "pretyping/evarsolve.ml", line 103, characters 9-21
+Called from Evarsolve.invert_definition.imitate in file "pretyping/evarsolve.ml", line 1645, characters 36-58
+Called from Stdlib__array.map in file "array.ml", line 106, characters 21-40
+Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 711, characters 16-34
+Called from Stdlib__array.map in file "array.ml", line 108, characters 21-40
+Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 711, characters 16-34
+Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
+Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
+Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
+Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
+Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 697, characters 15-20
+Called from Evarsolve.invert_definition in file "pretyping/evarsolve.ml", line 1716, characters 15-34
+Called from Evarsolve.evar_define in file "pretyping/evarsolve.ml", line 1743, characters 22-91
+Called from Evarsolve.solve_simple_eqn in file "pretyping/evarsolve.ml", line 1823, characters 14-79
+Called from Evarconv.evar_conv_x in file "pretyping/evarconv.ml", line 578, characters 19-125
+Called from Evarconv.unify_leq_delay in file "pretyping/evarconv.ml", line 1817, characters 8-45
+Called from Coercion.inh_conv_coerce_to_fail in file "pretyping/coercion.ml", line 622, characters 7-44
+Called from Coercion.inh_conv_coerce_to_gen in file "pretyping/coercion.ml", line 658, characters 33-111
+Called from Pretyping.Default.pretype_var in file "pretyping/pretyping.ml", line 627, characters 21-96
+Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
+Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1373, characters 21-85
+Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
+Called from Ltac_plugin__Tacinterp.type_uconstr in file "plugins/ltac/tacinterp.ml", line 1093, characters 2-57
+Called from Ltac_plugin__Internals.exact.(fun) in file "plugins/ltac/internals.ml", line 377, characters 17-85
+Called from Proofview.Goal.enter.f in file "engine/proofview.ml", line 1120, characters 40-46
+Called from Logic_monad.BackState.(>>=).(fun) in file "engine/logic_monad.ml", line 192, characters 38-43
+Called from Logic_monad.BackState.split.(fun) in file "engine/logic_monad.ml", line 260, characters 6-27
+Called from Logic_monad.BackState.split.(fun) in file "engine/logic_monad.ml", line 260, characters 6-27
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.run in file "engine/logic_monad.ml", line 117, characters 8-12
+Called from Proofview.apply in file "engine/proofview.ml", line 234, characters 12-42
+Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
+Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
+Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
+Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
+Called from Cases.build_leaf in file "pretyping/cases.ml", line 1298, characters 17-79
+Called from Cases.compile.shift_problem in file "pretyping/cases.ml", line 1503, characters 25-41
+Called from Cases.compile_cases.compile_for_one_predicate in file "pretyping/cases.ml", line 2770, characters 25-55
+Called from Cases.list_try_compile.aux in file "pretyping/cases.ml", line 82, characters 10-13
+Called from Cases.compile_cases in file "pretyping/cases.ml", line 2779, characters 23-71
+Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
+Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
+Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
+Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
+Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
+Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
+Called from Logic_monad.BackState.(>>=).(fun) in file "engine/logic_monad.ml", line 192, characters 38-43
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.run in file "engine/logic_monad.ml", line 117, characters 8-12
+Called from Proofview.apply in file "engine/proofview.ml", line 234, characters 12-42
+Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
+Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
+Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
+Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
+Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
+Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
+Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
+Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
+Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
+Called from Logic_monad.BackState.(>>=).(fun) in file "engine/logic_monad.ml", line 192, characters 38-43
+Called from Logic_monad.BackState.split.(fun) in file "engine/logic_monad.ml", line 260, characters 6-27
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.run in file "engine/logic_monad.ml", line 117, characters 8-12
+Called from Proofview.apply in file "engine/proofview.ml", line 234, characters 12-42
+Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
+Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
+Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
+Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
+Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
+Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
+Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
+Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
+Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
+Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
+Called from Logic_monad.BackState.(>>=).(fun) in file "engine/logic_monad.ml", line 192, characters 38-43
+Called from Logic_monad.BackState.split.(fun) in file "engine/logic_monad.ml", line 260, characters 6-27
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.run in file "engine/logic_monad.ml", line 117, characters 8-12
+Called from Proofview.apply in file "engine/proofview.ml", line 234, characters 12-42
+Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
+Called from Proof.solve in file "proofs/proof.ml", line 500, characters 31-52
+Called from ComTactic.solve_core.(fun) in file "vernac/comTactic.ml", line 46, characters 23-59
+Called from Declare.Proof.map_fold_endline in file "vernac/declare.ml", line 1457, characters 20-33
+Called from ComTactic.solve_core in file "vernac/comTactic.ml", line 43, characters 23-442
+Called from Vernacextend.vtmodifyproof.(fun) in file "vernac/vernacextend.ml", line 163, characters 32-47
+Called from Vernacinterp.interp_typed_vernac in file "vernac/vernacinterp.ml", line 20, characters 20-113
+Called from Vernacinterp.interp_control.(fun) in file "vernac/vernacinterp.ml", line 203, characters 24-69
+Called from Flags.with_modified_ref in file "lib/flags.ml", line 17, characters 14-17
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Vernacinterp.interp_gen.(fun) in file "vernac/vernacinterp.ml", line 253, characters 18-43
+Called from Vernacinterp.interp_gen in file "vernac/vernacinterp.ml", line 251, characters 6-279
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Stm.Reach.known_state.reach.(fun) in file "stm/stm.ml", line 2169, characters 20-47
+Called from Stm.Reach.known_state.resilient_tactic in file "stm/stm.ml", line 2111, characters 10-14
+Called from Stm.State.define in file "stm/stm.ml", line 964, characters 6-10
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Stm.Reach.known_state.reach in file "stm/stm.ml", line 2320, characters 4-105
+Called from Stm.observe in file "stm/stm.ml", line 2421, characters 4-60
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Vernac.interp_vernac in file "toplevel/vernac.ml", line 68, characters 31-52
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Vernac.process_expr in file "toplevel/vernac.ml" (inlined), line 123, characters 2-60
+Called from Coqloop.process_toplevel_command in file "toplevel/coqloop.ml", line 415, characters 17-62
+Called from Coqloop.read_and_execute_base in file "toplevel/coqloop.ml", line 452, characters 4-39
+Called from Coqloop.read_and_execute in file "toplevel/coqloop.ml", line 458, characters 6-34
 
+*)
