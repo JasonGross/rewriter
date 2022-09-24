@@ -1,30 +1,9 @@
 (* -*- mode: coq; coq-prog-args: ("-emacs" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,+undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes" "-R" "src/Rewriter" "Rewriter" "-I" "src/Rewriter/Util/plugins" "-top" "Rewriter.Rewriter.Examples" "-native-compiler" "ondemand" "-native-compiler" "ondemand") -*- *)
-(* File reduced by coq-bug-minimizer from original input, then from 2055 lines to 1411 lines, then from 1424 lines to 1327 lines, then from 1340 lines to 1498 lines, then from 1503 lines to 1328 lines, then from 1341 lines to 1508 lines, then from 1513 lines to 1330 lines, then from 1343 lines to 1501 lines, then from 1506 lines to 1333 lines, then from 1346 lines to 1502 lines, then from 1507 lines to 1366 lines, then from 1379 lines to 5401 lines, then from 5404 lines to 1415 lines, then from 1428 lines to 2841 lines, then from 2844 lines to 2214 lines, then from 2227 lines to 2256 lines, then from 2261 lines to 2221 lines, then from 2234 lines to 4165 lines, then from 4168 lines to 3564 lines, then from 3578 lines to 3618 lines, then from 3624 lines to 3581 lines, then from 3595 lines to 3618 lines, then from 3624 lines to 3581 lines, then from 3595 lines to 4591 lines, then from 4597 lines to 4298 lines, then from 4312 lines to 4353 lines, then from 4359 lines to 4330 lines *)
+(* File reduced by coq-bug-minimizer from original input, then from 2055 lines to 1411 lines, then from 1424 lines to 1327 lines, then from 1340 lines to 1498 lines, then from 1503 lines to 1328 lines, then from 1341 lines to 1508 lines, then from 1513 lines to 1330 lines, then from 1343 lines to 1501 lines, then from 1506 lines to 1333 lines, then from 1346 lines to 1502 lines, then from 1507 lines to 1366 lines, then from 1379 lines to 5401 lines, then from 5404 lines to 1415 lines, then from 1428 lines to 2841 lines, then from 2844 lines to 2214 lines, then from 2227 lines to 2256 lines, then from 2261 lines to 2221 lines, then from 2234 lines to 4165 lines, then from 4168 lines to 3564 lines, then from 3578 lines to 3618 lines, then from 3624 lines to 3581 lines, then from 3595 lines to 3618 lines, then from 3624 lines to 3581 lines, then from 3595 lines to 4591 lines, then from 4597 lines to 4298 lines, then from 4312 lines to 4353 lines, then from 4359 lines to 4308 lines *)
 (* coqc version 8.15.0 compiled with OCaml 4.11.2
    coqtop version 8.15.0
    Modules that could not be inlined: Rewriter.Rewriter.Rewriter, Rewriter.Util.TypeList
-   Expected coqc runtime on this file: 25.309 sec *)
-Require Coq.ZArith.ZArith.
-Require Coq.Lists.List.
-Require Coq.micromega.Lia.
-Require Coq.FSets.FMapPositive.
-Require Coq.Classes.Morphisms.
-Require Coq.Relations.Relations.
-Require Coq.Bool.Bool.
-Require Coq.Relations.Relation_Definitions.
-Require Ltac2.Init.
-Require Coq.Classes.RelationClasses.
-Require Rewriter.Util.IffT.
-Require Rewriter.Util.Isomorphism.
-Require Rewriter.Util.HProp.
-Require Rewriter.Util.Equality.
-Require Rewriter.Util.GlobalSettings.
-Require Rewriter.Util.PrimitiveProd.
-Require Rewriter.Util.PrimitiveHList.
-Require Rewriter.Util.InductiveHList.
-Require Rewriter.Util.FixCoqMistakes.
-Require Rewriter.Util.Notations.
-Require Rewriter.Util.Bool.
+   Expected coqc runtime on this file: 22.579 sec *)
 Require Rewriter.Language.Wf.
 Require Rewriter.Language.IdentifiersGenerateProofs.
 Require Rewriter.Util.Tactics2.Ident.
@@ -46,7 +25,6 @@ Ltac2 mkRel (i : int) :=
   make (Rel i).
 Ltac2 mkVar (i : ident) :=
   make (Var i).
-Import Ltac2.Ltac2.
 Import Ltac2.Printf.
 Import Rewriter.Language.Language.
 Import Rewriter.Util.LetIn.

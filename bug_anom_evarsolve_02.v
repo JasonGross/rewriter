@@ -1467,8 +1467,52 @@ Defined.
              | _ => idtac
              end;
              idtac "checking:" val;
-             let __ := constr:(ltac:(exact val)) in
-             idtac
+             tryif (idtac; lazymatch val with
+                           | @pattern.base.lookup_default ?ev => is_evar ev
+                           | @pattern.base.lookup_default ?ev _ => is_evar ev
+                           | @pattern.base.lookup_default ?ev _ _ => is_evar ev
+                           end)
+             then idtac "skipping"
+             else (let __ := constr:(ltac:(exact val)) in idtac "check ✓")
+        end.
+
+      Ltac replace_with in_val from to :=
+        lazymatch in_val with
+        | context v[from]
+          => let v := context v[to] in
+             replace_with v from to
+        | _ => in_val
+        end.
+
+      Ltac check_exact_under val x T :=
+        lazymatch goal with
+        | _
+          => lazymatch val with
+             | ?f ?y
+               => check_exact_under f x T; check_exact_under y x T
+             | fun y : ?U => ?f
+               => let f' := fresh in
+                  check_exact_under U x T;
+                  let __ := constr:(fun y : U
+                                    => match f return _ with
+                                       | f' => ltac:(let f := (eval cbv delta [f'] in f') in
+                                                     clear f';
+                                                     check_exact_under f x T;
+                                                     exact I)
+                                       end) in
+                  idtac
+             | _ => idtac
+             end;
+             idtac "BUG HERE checking:" val "under" x ":" T;
+             let val' := fresh in
+             let x' := fresh in
+             let __ := constr:(fun x' : T => match val return _ with
+                                             | val'
+                                               => ltac:(let val := (eval cbv delta [val'] in val') in
+                                                        let val := replace_with val x x' in
+                                                        exact val)
+                                             end) in
+             idtac "check under ✓"
         end.
 
 
@@ -1489,19 +1533,23 @@ Defined.
         | forall x : ?T, ?P
           => let __ := match goal with _ => idtac "forall" end in
              let P' := fresh in
-             constr:(
-               fun x : T
-               => match P return _ with
-                  | P'
-                    => ltac:(let __ := match goal with _ => idtac "P':" P' end in
-                             let P := (eval cbv delta [P'] in P') in
-                             let __ := match goal with _ => idtac "P:" P end in
-                             clear P';
-                             let res := equation_to_parts' P side_conditions in
-                             let __ := match goal with _ => idtac "eq res:" res end in
-                             let __ := match goal with _ => check_exact res end in
-                             exact res)
-                  end)
+             let v := constr:(
+                                fun x : T
+                                => match P return _ with
+                                   | P'
+                                     => ltac:(let __ := match goal with _ => idtac "P':" P' end in
+                                              let P := (eval cbv delta [P'] in P') in
+                                              let __ := match goal with _ => idtac "P:" P end in
+                                              clear P';
+                                              let res := equation_to_parts' P side_conditions in
+                                              let __ := match goal with _ => idtac "eq res:" res end in
+                                              let __ := match goal with _ => check_exact res end in
+                                              let __ := match goal with _ => check_exact_under res x T end in
+                                              let __ := match goal with _ => idtac "about to exact" res "under" x ":" T end in
+                                              exact res)
+                                   end) in
+             let __ := match goal with _ => idtac "exact res success" v end in
+             v
         | @eq ?T ?A ?B
           => constr:((@eq T A B, side_conditions))
         | ?T => constr_fail_with ltac:(fun _ => fail 1 "Invalid type of equation:" T)
@@ -5537,90 +5585,20 @@ Goal True.
    let v := Reify.Compilers.RewriteRules.Make.Reify reify_base reify_ident exprInfo
                                                     exprExtraInfo pkg ident_is_var_like include_interp specs in
    idtac v.
-    (* the call to exact is with *)
-    (*
-(fun
-   (C : @base.interp base base_interp0
-          (@pattern.base.lookup_default base 1
-             (@PositiveMap.add (base.type base) 1%positive A
-                (PositiveMap.empty (base.type base)))) ->
-        Datatypes.list
-          (@base.interp base base_interp0
-             (@pattern.base.lookup_default base 1
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base))))) ->
-        (@base.interp base base_interp0
-           (@pattern.base.lookup_default base 2
-              (@PositiveMap.add (base.type base) 2%positive P
-                 (@PositiveMap.add (base.type base) 1%positive A
-                    (PositiveMap.empty (base.type base))))) ->
-         @base.interp base base_interp0
-           (@pattern.base.lookup_default ?y2 3
-              (@PositiveMap.add (base.type base) 3%positive Q
-                 (@PositiveMap.add (base.type base) 2%positive P
-                    (@PositiveMap.add (base.type base) 1%positive A
-                       (PositiveMap.empty (base.type base))))))) ->
-        @base.interp base base_interp0
-          (@pattern.base.lookup_default base 2
-             (@PositiveMap.add (base.type base) 2%positive P
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base))))) ->
-        @base.interp base base_interp0
-          (@pattern.base.lookup_default ?y2 3
-             (@PositiveMap.add (base.type base) 3%positive Q
-                (@PositiveMap.add (base.type base) 2%positive P
-                   (@PositiveMap.add (base.type base) 1%positive A
-                      (PositiveMap.empty (base.type base)))))))
-   (ls : Datatypes.list
-           (@base.interp base base_interp0
-              (@pattern.base.lookup_default base 1
-                 (@PositiveMap.add (base.type base) 1%positive A
-                    (PositiveMap.empty (base.type base))))))
-   (v : @base.interp base base_interp0
-          (@pattern.base.lookup_default base 2
-             (@PositiveMap.add (base.type base) 2%positive P
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base)))))) =>
- (@list_rect_arrow_nodep
-    (@base.interp base base_interp0
-       (@pattern.base.lookup_default base 1
-          (@PositiveMap.add (base.type base) 1%positive A
-             (PositiveMap.empty (base.type base)))))
-    (@base.interp base base_interp0
-       (@pattern.base.lookup_default base 2
-          (@PositiveMap.add (base.type base) 2%positive P
-             (@PositiveMap.add (base.type base) 1%positive A
-                (PositiveMap.empty (base.type base))))))
-    (@base.interp base base_interp0
-       (@pattern.base.lookup_default ?y2 3
-          (@PositiveMap.add (base.type base) 3%positive Q
-             (@PositiveMap.add (base.type base) 2%positive P
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base))))))) N C ls v =
-  @ident.eagerly
-    (forall A0 P0 Q0 : Type,
-     (P0 -> Q0) ->
-     (A0 -> Datatypes.list A0 -> (P0 -> Q0) -> P0 -> Q0) ->
-     Datatypes.list A0 -> P0 -> Q0) (@list_rect_arrow_nodep)
-    (@base.interp base base_interp0
-       (@pattern.base.lookup_default base 1
-          (@PositiveMap.add (base.type base) 1%positive A
-             (PositiveMap.empty (base.type base)))))
-    (@base.interp base base_interp0
-       (@pattern.base.lookup_default base 2
-          (@PositiveMap.add (base.type base) 2%positive P
-             (@PositiveMap.add (base.type base) 1%positive A
-                (PositiveMap.empty (base.type base))))))
-    (@base.interp base base_interp0
-       (@pattern.base.lookup_default ?y2 3
-          (@PositiveMap.add (base.type base) 3%positive Q
-             (@PositiveMap.add (base.type base) 2%positive P
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base))))))) N C ls v,
- @Datatypes.nil bool))
-     *)
-    (* note the ?y2, which would already be solved by Constr.Unsafe.check *)
 (*
+BUG HERE checking:
+(@eq
+   (@base.interp base base_interp0
+      (@pattern.base.lookup_default ?Goal5 1
+         (@PositiveMap.add (base.type base) 1%positive A
+            (PositiveMap.empty (base.type base)))))) under b :
+(@base.interp base base_interp0
+   (@pattern.base.lookup_default ?y1 2
+      (@PositiveMap.add (base.type base) 2%positive B
+         (@PositiveMap.add (base.type base) 1%positive A
+            (PositiveMap.empty (base.type base))))))</infomsg>
+Toplevel input, characters 0-781:
+[...]
 Error:
 Anomaly
 "File "pretyping/evarsolve.ml", line 103, characters 9-15: Assertion failed."
@@ -5631,11 +5609,8 @@ Called from Stdlib__array.map in file "array.ml", line 106, characters 21-40
 Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 711, characters 16-34
 Called from Stdlib__array.map in file "array.ml", line 108, characters 21-40
 Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 711, characters 16-34
-Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
-Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
-Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
-Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
 Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 697, characters 15-20
+Called from Termops.Internal.map_constr_with_full_binders in file "engine/termops.ml", line 698, characters 15-53
 Called from Evarsolve.invert_definition in file "pretyping/evarsolve.ml", line 1716, characters 15-34
 Called from Evarsolve.evar_define in file "pretyping/evarsolve.ml", line 1743, characters 22-91
 Called from Evarsolve.solve_simple_eqn in file "pretyping/evarsolve.ml", line 1823, characters 14-79
@@ -5653,6 +5628,76 @@ Called from Proofview.Goal.enter.f in file "engine/proofview.ml", line 1120, cha
 Called from Logic_monad.BackState.(>>=).(fun) in file "engine/logic_monad.ml", line 192, characters 38-43
 Called from Logic_monad.BackState.split.(fun) in file "engine/logic_monad.ml", line 260, characters 6-27
 Called from Logic_monad.BackState.split.(fun) in file "engine/logic_monad.ml", line 260, characters 6-27
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.run in file "engine/logic_monad.ml", line 117, characters 8-12
+Called from Proofview.apply in file "engine/proofview.ml", line 234, characters 12-42
+Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
+Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
+Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
+Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
+Called from Cases.build_leaf in file "pretyping/cases.ml", line 1298, characters 17-79
+Called from Cases.compile.shift_problem in file "pretyping/cases.ml", line 1503, characters 25-41
+Called from Cases.compile_cases.compile_for_one_predicate in file "pretyping/cases.ml", line 2770, characters 25-55
+Called from Cases.list_try_compile.aux in file "pretyping/cases.ml", line 82, characters 10-13
+Called from Cases.compile_cases in file "pretyping/cases.ml", line 2779, characters 23-71
+Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
+Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
+Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
+Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
+Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
+Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
+Called from Logic_monad.BackState.(>>=).(fun) in file "engine/logic_monad.ml", line 192, characters 38-43
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
+Called from Logic_monad.NonLogical.run in file "engine/logic_monad.ml", line 117, characters 8-12
+Called from Proofview.apply in file "engine/proofview.ml", line 234, characters 12-42
+Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
+Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
+Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
+Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
+Called from Cases.build_leaf in file "pretyping/cases.ml", line 1298, characters 17-79
+Called from Cases.compile.shift_problem in file "pretyping/cases.ml", line 1503, characters 25-41
+Called from Cases.compile_cases.compile_for_one_predicate in file "pretyping/cases.ml", line 2770, characters 25-55
+Called from Cases.list_try_compile.aux in file "pretyping/cases.ml", line 82, characters 10-13
+Called from Cases.compile_cases in file "pretyping/cases.ml", line 2779, characters 23-71
+Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
+Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
+Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
+Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
+Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
+Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
+Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
+Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
+Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
+Called from Logic_monad.BackState.(>>=).(fun) in file "engine/logic_monad.ml", line 192, characters 38-43
+Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
 Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
 Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
 Called from Logic_monad.NonLogical.run in file "engine/logic_monad.ml", line 117, characters 8-12
@@ -5704,14 +5749,6 @@ Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.m
 Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
 Called from Logic_monad.BackState.(>>=).(fun) in file "engine/logic_monad.ml", line 192, characters 38-43
 Called from Logic_monad.BackState.split.(fun) in file "engine/logic_monad.ml", line 260, characters 6-27
-Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
-Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
-Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
-Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
-Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
-Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
-Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
-Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
 Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
 Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
 Called from Logic_monad.NonLogical.(>>=).(fun) in file "engine/logic_monad.ml", line 67, characters 36-42
