@@ -1,18 +1,186 @@
 (* -*- mode: coq; coq-prog-args: ("-emacs" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,+undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes" "-R" "src/Rewriter" "Rewriter" "-I" "src/Rewriter/Util/plugins" "-top" "Rewriter.Rewriter.Examples" "-native-compiler" "ondemand" "-native-compiler" "ondemand") -*- *)
-(* File reduced by coq-bug-minimizer from original input, then from 2055 lines to 1411 lines, then from 1424 lines to 1327 lines, then from 1340 lines to 1498 lines, then from 1503 lines to 1328 lines, then from 1341 lines to 1508 lines, then from 1513 lines to 1330 lines, then from 1343 lines to 1501 lines, then from 1506 lines to 1333 lines, then from 1346 lines to 1502 lines, then from 1507 lines to 1366 lines, then from 1379 lines to 5401 lines, then from 5404 lines to 1415 lines, then from 1428 lines to 2841 lines, then from 2844 lines to 2214 lines, then from 2227 lines to 2256 lines, then from 2261 lines to 2221 lines, then from 2234 lines to 4165 lines, then from 4168 lines to 3564 lines, then from 3578 lines to 3618 lines, then from 3624 lines to 3581 lines, then from 3595 lines to 3618 lines, then from 3624 lines to 3581 lines, then from 3595 lines to 4591 lines, then from 4597 lines to 4298 lines, then from 4312 lines to 4353 lines, then from 4359 lines to 4308 lines *)
+(* File reduced by coq-bug-minimizer from original input, then from 2055 lines to 1411 lines, then from 1424 lines to 1327 lines, then from 1340 lines to 1498 lines, then from 1503 lines to 1328 lines, then from 1341 lines to 1508 lines, then from 1513 lines to 1330 lines, then from 1343 lines to 1501 lines, then from 1506 lines to 1333 lines, then from 1346 lines to 1502 lines, then from 1507 lines to 1366 lines, then from 1379 lines to 5401 lines, then from 5404 lines to 1415 lines, then from 1428 lines to 2841 lines, then from 2844 lines to 2214 lines, then from 2227 lines to 2256 lines, then from 2261 lines to 2221 lines, then from 2234 lines to 4165 lines, then from 4168 lines to 3564 lines, then from 3578 lines to 3618 lines, then from 3624 lines to 3581 lines, then from 3595 lines to 3618 lines, then from 3624 lines to 3581 lines, then from 3595 lines to 4591 lines, then from 4597 lines to 4298 lines, then from 4312 lines to 4353 lines, then from 4359 lines to 4308 lines, then from 4322 lines to 4356 lines, then from 4362 lines to 4321 lines, then from 4335 lines to 4375 lines, then from 4381 lines to 4338 lines, then from 4352 lines to 4384 lines, then from 4390 lines to 4475 lines *)
 (* coqc version 8.15.0 compiled with OCaml 4.11.2
    coqtop version 8.15.0
    Modules that could not be inlined: Rewriter.Rewriter.Rewriter, Rewriter.Util.TypeList
-   Expected coqc runtime on this file: 22.579 sec *)
+   Expected coqc runtime on this file: 52.802 sec *)
+Require Coq.ZArith.ZArith.
+Require Coq.Lists.List.
+Require Coq.micromega.Lia.
+Require Coq.FSets.FMapPositive.
+Require Coq.Classes.Morphisms.
+Require Coq.Relations.Relations.
+Require Coq.Bool.Bool.
+Require Coq.Relations.Relation_Definitions.
+Require Ltac2.Init.
+Require Coq.Classes.RelationClasses.
+Require Rewriter.Util.IffT.
+Require Rewriter.Util.Isomorphism.
+Require Rewriter.Util.HProp.
+Require Rewriter.Util.Equality.
+Require Rewriter.Util.GlobalSettings.
+Require Rewriter.Util.PrimitiveProd.
+Require Rewriter.Util.PrimitiveHList.
+Require Rewriter.Util.InductiveHList.
+Require Rewriter.Util.FixCoqMistakes.
+Require Rewriter.Util.Notations.
+Require Rewriter.Language.PreCommon.
+Require Rewriter.Util.Tactics.GetGoal.
+Require Rewriter.Util.LetIn.
+Require Coq.Lists.SetoidList.
+Require Coq.Arith.Peano_dec.
+Require Coq.Arith.Arith.
+Require Coq.Numbers.Natural.Peano.NPeano.
+Require Coq.Logic.Eqdep_dec.
+Require Coq.NArith.NArith.
+Require Rewriter.Util.NatUtil.
+Require Coq.Numbers.BinNums.
+Require Rewriter.Util.Pointed.
+Require Coq.Setoids.Setoid.
+Require Rewriter.Util.Prod.
+Require Rewriter.Util.Sigma.
+Require Coq.ZArith.BinInt.
+Require Coq.ZArith.ZArith_dec.
+Require Coq.NArith.BinNat.
+Require Rewriter.Util.Decidable.
+Require Rewriter.Util.Tactics.Head.
+Require Rewriter.Util.Tactics.BreakMatch.
+Require Rewriter.Util.Tactics.DestructHyps.
+Require Rewriter.Util.Tactics.DestructHead.
+Require Rewriter.Util.Option.
+Require Rewriter.Util.Tactics.SpecializeBy.
+Require Rewriter.Util.Tactics.Test.
+Require Rewriter.Util.Tactics.Not.
+Require Rewriter.Util.Tactics.DoWithHyp.
+Require Rewriter.Util.Tactics.RewriteHyp.
+Require Rewriter.Util.Tactics.ConstrFail.
+Require Rewriter.Util.Tactics.SplitInContext.
+Require Rewriter.Util.ListUtil.
+Require Rewriter.Util.OptionList.
+Require Rewriter.Util.CPSNotations.
+Require Coq.Classes.CMorphisms.
+Require Coq.Strings.String.
+Require Coq.Strings.Ascii.
+Require Rewriter.Util.ListUtil.SetoidList.
+Require Rewriter.Util.Tactics.Contains.
+Require Rewriter.Util.Tactics.SetoidSubst.
+Require Rewriter.Util.Sum.
+Require Rewriter.Util.Comparison.
+Require Rewriter.Util.Bool.Reflect.
+Require Rewriter.Util.Bool.
+Require Rewriter.Language.Language.
+Require Rewriter.Util.Tactics.FindHyp.
+Require Rewriter.Util.Tactics.UniquePose.
+Require Rewriter.Util.Tactics.SpecializeAllWays.
+Require Rewriter.Language.Inversion.
+Require Rewriter.Util.ListUtil.Forall.
+Require Rewriter.Util.Logic.ProdForall.
 Require Rewriter.Language.Wf.
+Require Coq.MSets.MSetPositive.
+Require Rewriter.Util.PrimitiveSigma.
+Require Coq.MSets.MSetFacts.
+Require Rewriter.Util.Logic.ExistsEqAnd.
+Require Rewriter.Util.MSetPositive.Facts.
+Require Rewriter.Util.Tactics.PrintContext.
+Require Rewriter.Util.Tactics.PrintGoal.
+Require Rewriter.Util.Tactics.WarnIfGoalsRemain.
+Require Rewriter.Util.Tactics.EvarNormalize.
+Require Rewriter.Util.Tactics.ClearFree.
+Require Rewriter.Util.Tactics.CacheTerm.
+Require Coq.derive.Derive.
+Require Rewriter.Language.Pre.
+Require Rewriter.Language.IdentifiersBasicLibrary.
+Require Rewriter.Language.IdentifiersLibrary.
+Require Rewriter.Util.Tactics.DebugPrint.
+Require Rewriter.Language.IdentifiersGenerate.
+Require Rewriter.Language.IdentifiersLibraryProofs.
 Require Rewriter.Language.IdentifiersGenerateProofs.
+Require Ltac2.Ltac2.
+Require Ltac2.Printf.
+Require Ltac2.Ltac1.
 Require Rewriter.Util.Tactics2.Ident.
-Require Rewriter.Util.Tactics2.String.
-Require Rewriter.Util.Tactics2.Message.
-Require Rewriter.Util.Tactics2.Ltac1.
+Require Rewriter.Util.Tactics2.Char.
 Require Rewriter.Util.TypeList.
+Require Rewriter.Language.UnderLets.
 Require Rewriter.Rewriter.Rewriter.
+
+Declare ML Module "ltac_plugin".
+Module Export AdmitTactic.
+Module Import LocalFalse.
+Inductive False : Prop := .
+End LocalFalse.
+Axiom proof_admitted : False.
+Global Set Default Proof Mode "Classic".
+Tactic Notation "admit" := abstract case proof_admitted.
+End AdmitTactic.
+
+Module Export Rewriter_DOT_Util_DOT_Tactics2_DOT_String_WRAPPED.
+Module Export String.
 Import Ltac2.Ltac2.
+Export Rewriter.Util.FixCoqMistakes.
+
+ 
+Ltac2 null () : string := String.make 1 (Char.null ()).
+Ltac2 backspace () : string := String.make 1 (Char.backspace ()).
+Ltac2 tab () : string := String.make 1 (Char.tab ()).
+Ltac2 lf () : string := String.make 1 (Char.lf ()).
+Ltac2 newpage () : string := String.make 1 (Char.newpage ()).
+Ltac2 cr () : string := String.make 1 (Char.cr ()).
+Ltac2 escape () : string := String.make 1 (Char.escape ()).
+Ltac2 newline () : string := String.make 1 (Char.newline ()).
+
+End String.
+
+End Rewriter_DOT_Util_DOT_Tactics2_DOT_String_WRAPPED.
+Module Export Rewriter_DOT_Util_DOT_Tactics2_DOT_String.
+Module Export Rewriter.
+Module Export Util.
+Module Export Tactics2.
+Module Export String.
+Include Rewriter_DOT_Util_DOT_Tactics2_DOT_String_WRAPPED.String.
+End String.
+
+End Tactics2.
+
+End Util.
+
+End Rewriter.
+
+End Rewriter_DOT_Util_DOT_Tactics2_DOT_String.
+Module Export Message.
+Import Ltac2.Ltac2.
+Import Ltac2.Printf.
+
+Ltac2 of_list (pr : 'a -> message) (ls : 'a list) : message
+  := fprintf
+       "[%a]"
+       (fun () a => a)
+       (match ls with
+        | [] => fprintf ""
+        | x :: xs
+          => List.fold_left (fun init x => fprintf "%a, %a" (fun () a => a) init (fun () => pr) x) xs (pr x)
+        end).
+
+Ltac2 of_binder (b : binder) : message
+  := fprintf "%a : %t" (fun () a => a) (match Constr.Binder.name b with
+                                        | Some n => fprintf "%I" n
+                                        | None => fprintf ""
+                                        end)
+             (Constr.Binder.type b).
+Module Export Ltac1.
+
+Ltac2 Type exn ::= [ Not_a_constr (string, Ltac1.t) ].
+
+#[deprecated(since="8.15",note="Use Ltac2 instead.")]
+ Ltac2 get_to_constr (debug_name : string) v :=
+  match Ltac1.to_constr v with
+  | Some v => v
+  | None => Control.throw (Not_a_constr debug_name v)
+  end.
+
+#[deprecated(since="8.15",note="Use Ltac2 instead.")]
+ Ltac2 apply_c (f : Ltac1.t) (args : constr list) : constr :=
+  '(ltac2:(Ltac1.apply f (List.map Ltac1.of_constr args) (fun v => Control.refine (fun () => get_to_constr "apply_c:arg" v)))).
 Import Ltac2.Constr.Unsafe.
 
 Ltac2 mkApp (f : constr) (args : constr list) :=
@@ -25,7 +193,6 @@ Ltac2 mkRel (i : int) :=
   make (Rel i).
 Ltac2 mkVar (i : ident) :=
   make (Var i).
-Import Ltac2.Printf.
 Import Rewriter.Language.Language.
 Import Rewriter.Util.LetIn.
 Import Rewriter.Util.ListUtil.

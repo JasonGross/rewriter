@@ -1,9 +1,9 @@
-(* -*- mode: coq; coq-prog-args: ("-emacs" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,+undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes" "-R" "src/Rewriter" "Rewriter" "-I" "src/Rewriter/Util/plugins" "-top" "Rewriter.Rewriter.Examples" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand") -*- *)
-(* File reduced by coq-bug-minimizer from original input, then from 104176 lines to 97527 lines, then from 97560 lines to 3537 lines, then from 3550 lines to 3708 lines, then from 3713 lines to 3538 lines, then from 3551 lines to 3718 lines, then from 3723 lines to 3540 lines, then from 3553 lines to 3711 lines, then from 3716 lines to 3542 lines, then from 3555 lines to 3711 lines, then from 3716 lines to 3574 lines, then from 3587 lines to 7609 lines, then from 7612 lines to 3623 lines, then from 3636 lines to 5049 lines, then from 5052 lines to 4422 lines, then from 4435 lines to 4464 lines, then from 4469 lines to 4430 lines, then from 4441 lines to 4298 lines, then from 4311 lines to 6242 lines, then from 6245 lines to 4519 lines, then from 4533 lines to 4556 lines, then from 4562 lines to 4519 lines, then from 4533 lines to 5529 lines, then from 5535 lines to 5240 lines, then from 5254 lines to 5295 lines, then from 5301 lines to 5250 lines, then from 5264 lines to 5298 lines, then from 5304 lines to 5263 lines, then from 5277 lines to 5317 lines, then from 5323 lines to 5280 lines, then from 5294 lines to 5326 lines, then from 5332 lines to 5282 lines, then from 5296 lines to 5327 lines, then from 5333 lines to 5283 lines, then from 5297 lines to 5332 lines, then from 5338 lines to 5295 lines, then from 5301 lines to 5296 lines *)
+(* -*- mode: coq; coq-prog-args: ("-emacs" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,-undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes,-deprecated-native-compiler-option,-require-in-module" "-R" "src/Rewriter" "Rewriter" "-I" "src/Rewriter/Util/plugins" "-top" "Rewriter.Rewriter.Examples" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand") -*- *)
+(* File reduced by coq-bug-minimizer from original input, then from 104176 lines to 97527 lines, then from 97560 lines to 3537 lines, then from 3550 lines to 3708 lines, then from 3713 lines to 3538 lines, then from 3551 lines to 3718 lines, then from 3723 lines to 3540 lines, then from 3553 lines to 3711 lines, then from 3716 lines to 3542 lines, then from 3555 lines to 3711 lines, then from 3716 lines to 3574 lines, then from 3587 lines to 7609 lines, then from 7612 lines to 3623 lines, then from 3636 lines to 5049 lines, then from 5052 lines to 4422 lines, then from 4435 lines to 4464 lines, then from 4469 lines to 4430 lines, then from 4441 lines to 4298 lines, then from 4311 lines to 6242 lines, then from 6245 lines to 4519 lines, then from 4533 lines to 4556 lines, then from 4562 lines to 4519 lines, then from 4533 lines to 5529 lines, then from 5535 lines to 5240 lines, then from 5254 lines to 5295 lines, then from 5301 lines to 5250 lines, then from 5264 lines to 5298 lines, then from 5304 lines to 5263 lines, then from 5277 lines to 5317 lines, then from 5323 lines to 5280 lines, then from 5294 lines to 5326 lines, then from 5332 lines to 5282 lines, then from 5296 lines to 5327 lines, then from 5333 lines to 5283 lines, then from 5297 lines to 5332 lines, then from 5338 lines to 5295 lines, then from 5301 lines to 5296 lines, then from 5987 lines to 5485 lines, then from 5487 lines to 5359 lines, then from 5365 lines to 5360 lines *)
 (* coqc version 8.15.0 compiled with OCaml 4.11.2
    coqtop version 8.15.0
    Modules that could not be inlined: Rewriter.Rewriter.Rewriter
-   Expected coqc runtime on this file: 2.329 sec *)
+   Expected coqc runtime on this file: 1.751 sec *)
 Require Ltac2.Ltac2.
 Require Rewriter.Rewriter.Rewriter.
 
@@ -72,30 +72,7 @@ Ltac2 mkRel (i : int) :=
 Ltac2 mkVar (i : ident) :=
   make (Var i).
 
-Module List.
-  (* Drop once the minimum dependency has been bumpped to 8.17 *)
-Ltac2 rec for_all2_aux (on_length_mismatch : 'a list -> 'b list -> bool) f xs ys :=
-  match xs with
-  | [] => match ys with
-          | [] => true
-          | y :: ys' => on_length_mismatch xs ys
-          end
-  | x :: xs'
-    => match ys with
-       | [] => on_length_mismatch xs ys
-       | y :: ys'
-         => match f x y with
-            | true => for_all2_aux on_length_mismatch f xs' ys'
-            | false => false
-            end
-       end
-  end.
-
-(* Drop once the minimum dependency has been bumpped to 8.17 *)
-Ltac2 equal f xs ys := for_all2_aux (fun _ _ => false) f xs ys.
-End  List.
-
-Module Option.
+Module Export Option.
   Ltac2 equal (eq : 'a -> 'b -> bool) (a : 'a option) (b : 'b option) : bool
     := match a with
        | None => match b with
@@ -107,9 +84,8 @@ Module Option.
                    | _ => false
                    end
        end.
-End Option.
 
-Module Array.
+Module Export Array.
   Import Ltac2.Array.
   Ltac2 rec for_all2_aux (p : 'a -> 'b -> bool) (a : 'a array) (b : 'b array) (pos : int) (len : int) :=
     if Int.equal len 0
@@ -117,13 +93,6 @@ Module Array.
     else if p (get a pos) (get b pos)
          then for_all2_aux p a b (Int.add pos 1) (Int.sub len 1)
          else false.
-
-  Ltac2 for_all2 p a b :=
-    let lena := length a in
-    let lenb := length b in
-    if Int.equal lena lenb
-    then for_all2_aux p a b 0 lena
-    else Control.throw_invalid_argument "Array.for_all2".
   Ltac2 equal p a b :=
     let lena := length a in
     let lenb := length b in
@@ -132,16 +101,13 @@ Module Array.
     else false.
 End Array.
 
-Module Projection.
-  Import Constr.Unsafe.
+Module Export Projection.
   Ltac2 equal (x : projection) (y : projection) : bool
     := let dummy := make (Rel (-1)) in
        Constr.equal (make (Proj x dummy)) (make (Proj y dummy)).
-End Projection.
 
-Module Constr.
+Module Export Constr.
   Import Ltac2.Constr.
-  Import Ltac2.Constr.Unsafe.
   Import Ltac2.Bool.
   Ltac2 rec kind_nocast_gen kind (x : constr) :=
     let k := kind x in
@@ -162,11 +128,11 @@ Module Constr.
                    && Array.equal equal_nounivs xs ys
               | _ => false
               end
-         | Rel _ => false (* handled by Constr.equal *)
-         | Var _ => false (* handled by Constr.equal *)
-         | Meta _ => false (* handled by Constr.equal *)
-         | Uint63 _ => false (* handled by Constr.equal *)
-         | Float _ => false (* handled by Constr.equal *)
+         | Rel _ => false
+         | Var _ => false
+         | Meta _ => false
+         | Uint63 _ => false
+         | Float _ => false
          | Evar ex instx
            => match kind y with
               | Evar ey insty
@@ -178,7 +144,7 @@ Module Constr.
               end
          | Sort sx
            => match kind y with
-              | Sort sy => true (*eq_sorts sx sy*)
+              | Sort sy => true
               | _ => false
               end
          | Prod xb fx
@@ -266,7 +232,6 @@ Module Constr.
               | _ => false
               end
          end.
-End Constr.
 
 Import Rewriter.Language.Language.
 Import Rewriter.Util.LetIn.
@@ -995,7 +960,6 @@ Module Export Compilers.
 
 Ltac2 Notation "strategy:(" s(strategy) ")" := s.
 Module Export IdentifiersBasicGenerate.
-Import Ltac2.Bool.
 Module Export Compilers.
 
   Module Export Basic.
@@ -1211,7 +1175,6 @@ Module Export Compilers.
       #[deprecated(since="8.15",note="Use Ltac2 instead.")]
       Ltac reify_ident_via_reify_package := Tactics.reify_ident_via_reify_package.
 Module Export Constr.
-Import Ltac2.Constr.
 
 Ltac2 is_sort(c: constr) :=
   match Unsafe.kind c with
@@ -1419,9 +1382,9 @@ Defined.
                               printf "1";
                               let ty_ctx := debug_Constr_check (mkApp 'PositiveMap.add [base_type; cur_i; rt; ty_ctx]) in
                               printf "2";
-                              let t := (*debug_Constr_check*) (mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['(ltac:(repeat match goal with H : _ |- _ => clear H end)); cur_i; ty_ctx] ]) in
+                              let t :=   (mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['(ltac:(repeat match goal with H : _ |- _ => clear H end)); cur_i; ty_ctx] ]) in
                               printf "3";
-                              let p := (*debug_Constr_check*) (Constr.Unsafe.substnl [t] 0 p) in
+                              let p :=   (Constr.Unsafe.substnl [t] 0 p) in
                               printf "3";
                               let cur_i := Std.eval_vm None (mkApp 'Pos.succ [cur_i]) in
                               printf "4";
@@ -1475,7 +1438,6 @@ Defined.
                    let __ := constr:(ltac:(repeat match goal with H : _ |- _ => clear H end; exact val)) in
                    idtac)
         end.
-
 
       Ltac equation_to_parts' lem side_conditions :=
         let __ := match goal with _ => idtac "equation_to_parts'" lem side_conditions end in
@@ -5159,45 +5121,7 @@ Admitted.
 Definition arg_types_unfolded0 :
     forall (t : type.type (pattern.base.type.type base))
       (_ : pattern_ident t), list Type.
-exact (fun (t : type.type (pattern.base.type.type base)) (idc : pattern_ident t)
-    =>
-    match idc in (pattern_ident t0) return (list Type) with
-    | pattern_ident_false0 => @nil Type
-    | pattern_ident_flat_map _ _ => @nil Type
-    | pattern_ident_app _ => @nil Type
-    | pattern_ident_map _ _ => @nil Type
-    | pattern_ident_snd _ _ => @nil Type
-    | pattern_ident_fst _ _ => @nil Type
-    | pattern_ident_Z0 => @nil Type
-    | pattern_ident_add => @nil Type
-    | pattern_ident_literal0 t0 =>
-        @cons Type
-          match t0 return Type with
-          | base_Z => Z
-          | base_nat0 => nat
-          | base_bool0 => bool
-          end (@nil Type)
-    | pattern_ident_nil0 _ => @nil Type
-    | pattern_ident_cons0 _ => @nil Type
-    | pattern_ident_Some0 _ => @nil Type
-    | pattern_ident_None0 _ => @nil Type
-    | pattern_ident_pair0 _ _ => @nil Type
-    | pattern_ident_tt0 => @nil Type
-    | pattern_ident_prod_rect_nodep0 _ _ _ => @nil Type
-    | pattern_ident_bool_rect0 _ => @nil Type
-    | pattern_ident_list_case0 _ _ => @nil Type
-    | pattern_ident_option_rect0 _ _ => @nil Type
-    | pattern_ident_nat_rect0 _ => @nil Type
-    | pattern_ident_eager_nat_rect0 _ => @nil Type
-    | pattern_ident_nat_rect_arrow0 _ _ => @nil Type
-    | pattern_ident_eager_nat_rect_arrow0 _ _ => @nil Type
-    | pattern_ident_list_rect0 _ _ => @nil Type
-    | pattern_ident_eager_list_rect0 _ _ => @nil Type
-    | pattern_ident_list_rect_arrow0 _ _ _ => @nil Type
-    | pattern_ident_eager_list_rect_arrow0 _ _ _ => @nil Type
-    | pattern_ident_List_nth_default0 _ => @nil Type
-    | pattern_ident_eager_List_nth_default0 _ => @nil Type
-    end).
+admit.
 Defined.
 Definition type_of_list_arg_types_beq_unfolded0 :
     forall (t : type.type (pattern.base.type.type base))
@@ -5220,108 +5144,7 @@ Admitted.
 Definition of_typed_ident_unfolded0 :
     forall (t : type.type (base.type.type base)) (_ : ident t),
     pattern_ident (@IdentifiersLibrary.Compilers.pattern.type.relax base t).
-exact (fun (t : type.type (base.type.type base)) (idc : ident t) =>
-    match
-      idc in (ident t0)
-      return
-        (pattern_ident
-           (@IdentifiersLibrary.Compilers.pattern.type.relax base t0))
-    with
-    | ident_false0 => pattern_ident_false0
-    | ident_flat_map t0 t1 =>
-        pattern_ident_flat_map
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_app t0 =>
-        pattern_ident_app
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_map t0 t1 =>
-        pattern_ident_map
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_snd t0 t1 =>
-        pattern_ident_snd
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_fst t0 t1 =>
-        pattern_ident_fst
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_Z0 => pattern_ident_Z0
-    | ident_add => pattern_ident_add
-    | ident_literal0 t0 _ => pattern_ident_literal0 t0
-    | ident_nil0 t0 =>
-        pattern_ident_nil0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_cons0 t0 =>
-        pattern_ident_cons0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_Some0 t0 =>
-        pattern_ident_Some0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_None0 t0 =>
-        pattern_ident_None0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_pair0 t0 t1 =>
-        pattern_ident_pair0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_tt0 => pattern_ident_tt0
-    | ident_prod_rect_nodep0 t0 t1 t2 =>
-        pattern_ident_prod_rect_nodep0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t2)
-    | ident_bool_rect0 t0 =>
-        pattern_ident_bool_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_list_case0 t0 t1 =>
-        pattern_ident_list_case0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_option_rect0 t0 t1 =>
-        pattern_ident_option_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_nat_rect0 t0 =>
-        pattern_ident_nat_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_eager_nat_rect0 t0 =>
-        pattern_ident_eager_nat_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_nat_rect_arrow0 t0 t1 =>
-        pattern_ident_nat_rect_arrow0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_eager_nat_rect_arrow0 t0 t1 =>
-        pattern_ident_eager_nat_rect_arrow0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_list_rect0 t0 t1 =>
-        pattern_ident_list_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_eager_list_rect0 t0 t1 =>
-        pattern_ident_eager_list_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_list_rect_arrow0 t0 t1 t2 =>
-        pattern_ident_list_rect_arrow0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t2)
-    | ident_eager_list_rect_arrow0 t0 t1 t2 =>
-        pattern_ident_eager_list_rect_arrow0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t2)
-    | ident_List_nth_default0 t0 =>
-        pattern_ident_List_nth_default0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_eager_List_nth_default0 t0 =>
-        pattern_ident_eager_List_nth_default0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    end).
+admit.
 Defined.
 Definition arg_types_of_typed_ident_unfolded0 :
     forall (t : type.type (base.type.type base)) (idc : ident t),
@@ -5520,15 +5343,7 @@ Notation specs   :=
                                       (@nil (prod bool Prop))))))))))))).
 Goal True.
   Unset Ltac Backtrace.
-  (*Set Ltac Backtrace.
-  Set Ltac2 Backtrace.
-  Set Debug "backtrace".
-  Ltac2 Set Pre.reify_debug_level := 100.
-  Set Printing Implicit.
-  Set Printing Existing Instances.
-  Check @pattern.base.lookup_default.
-  Print base.type.type.
-    *)
+
     let reify_package := constr:(reify_package) in
     let exprInfo := constr:(exprInfo) in
     let exprExtraInfo := constr:(exprExtraInfo) in
@@ -5547,433 +5362,3 @@ Goal True.
    let v := Reify.Compilers.RewriteRules.Make.Reify reify_base reify_ident exprInfo
                                                     exprExtraInfo pkg ident_is_var_like include_interp specs in
    idtac v.
-    (* Error:
-Backtrace:
-
-In nested Ltac calls to "Reify", "Reify_list",
-"(fun var : type (base.type base) -> Type => _)" (with
-try_make_transport_base_cps:=try_make_base_transport_cps0,
-reflect_ident_iota:=@Compile.reflect_ident_iota base ident base_interp0 baseHasNat0
-                      buildIdent0 buildEagerIdent0 toRestrictedIdent0
-                      toFromRestrictedIdent0 invertIdent0 baseHasNatCorrect0
-                      try_make_base_transport_cps0,
-pident_type_of_list_arg_types_beq:=type_of_list_arg_types_beq_unfolded0,
-pident_of_typed_ident:=of_typed_ident_unfolded0,
-pident_arg_types_of_typed_ident:=arg_types_of_typed_ident_unfolded0,
-pident_arg_types:=arg_types_unfolded0, pident:=pattern_ident,
-lems:=(include_interp, forall n : Z, (n + 0)%Z = n)
-      :: (include_interp, forall (A B : Type) (a : A) (b : B), @fst A B (a, b) = a)
-         :: (include_interp,
-            forall (A B : Type) (a : A) (b : B), @snd A B (a, b) = b)
-            :: (include_interp,
-               forall (A B : Type) (f : A -> B) (ls : Datatypes.list A),
-               @map A B f ls =
-               @ident.eagerly
-                 (forall (A0 : Type) (P : Datatypes.list A0 -> Type),
-                  P (@Datatypes.nil A0) ->
-                  (forall (a : A0) (l : Datatypes.list A0), P l -> P (a :: l)) ->
-                  forall l : Datatypes.list A0, P l) Datatypes.list_rect A
-                 (fun _ : Datatypes.list A => Datatypes.list B)
-                 (@Datatypes.nil B)
-                 (fun (x : A) (_ : Datatypes.list A) (map_f_xs : Datatypes.list B)
-                  => f x :: map_f_xs) ls)
-               :: (include_interp,
-                  forall (A : Type) (xs ys : Datatypes.list A),
-                  xs ++ ys =
-                  @ident.eagerly
-                    (forall (A0 : Type) (P : Datatypes.list A0 -> Type),
-                     P (@Datatypes.nil A0) ->
-                     (forall (a : A0) (l : Datatypes.list A0), P l -> P (a :: l)) ->
-                     forall l : Datatypes.list A0, P l) Datatypes.list_rect A
-                    (fun _ : Datatypes.list A => Datatypes.list A) ys
-                    (fun (x : A) (_ app_xs_ys : Datatypes.list A) => x :: app_xs_ys)
-                    xs)
-                  :: (include_interp,
-                     forall (A P Q : Type) (N : P -> Q)
-                       (C : A -> Datatypes.list A -> (P -> Q) -> P -> Q)
-                       (ls : Datatypes.list A) (v : P),
-                     @list_rect_arrow_nodep A P Q N C ls v =
-                     @ident.eagerly
-                       (forall A0 P0 Q0 : Type,
-                        (P0 -> Q0) ->
-                        (A0 -> Datatypes.list A0 -> (P0 -> Q0) -> P0 -> Q0) ->
-                        Datatypes.list A0 -> P0 -> Q0)
-                       (@list_rect_arrow_nodep) A P Q N C ls v)
-                     :: (include_interp,
-                        forall (A P : Type) (N : unit -> P)
-                          (C : A -> Datatypes.list A -> P -> P)
-                          (ls : Datatypes.list A),
-                        @Thunked.list_rect A P N C ls =
-                        @ident.eagerly
-                          (forall A0 P0 : Type,
-                           (unit -> P0) ->
-                           (A0 -> Datatypes.list A0 -> P0 -> P0) ->
-                           Datatypes.list A0 -> P0) (@Thunked.list_rect) A P N C ls)
-                        :: (include_interp,
-                           forall (A P : Type) (N : unit -> P)
-                             (C : A -> Datatypes.list A -> P),
-                           @Thunked.list_case A P N C (@Datatypes.nil A) = N tt)
-                           :: (include_interp,
-                              forall (A P : Type) (N : unit -> P)
-                                (C : A -> Datatypes.list A -> P)
-                                (x : A) (xs : Datatypes.list A),
-                              @Thunked.list_case A P N C (x :: xs) = C x xs)
-                              :: (include_interp,
-                                 forall (A : Type) (default : A)
-                                   (ls : Datatypes.list A)
-                                   (n : nat),
-                                 @nth_default A default ls (@ident.literal nat n) =
-                                 @ident.eagerly
-                                   (forall A0 : Type,
-                                    A0 -> Datatypes.list A0 -> nat -> A0)
-                                   nth_default A default ls
-                                   (@ident.literal nat n))
-                                 :: (true,
-                                    forall (A B : Type)
-                                      (f : A -> Datatypes.list B)
-                                      (xs : Datatypes.list A),
-                                    @flat_map A B f xs =
-                                    @Datatypes.list_rect A
-                                      (fun _ : Datatypes.list A => Datatypes.list B)
-                                      (@Datatypes.nil B)
-                                      (fun (x : A) (_ : Datatypes.list A)
-                                         (flat_map_tl : Datatypes.list B) =>
-                                       f x ++ flat_map_tl) xs)
-                                    :: @Datatypes.nil (bool * Prop), ident:=ident,
-gets_inlined:=fun (var : type (base.type base) -> Type) (t : base.type base) =>
-              @SubstVarLike.is_recursively_var_or_ident
-                (base.type base) ident var ident_is_var_like
-                (@type.base (base.type base) t), base_interp_beq:=base_interp_beq0,
-base_interp:=base_interp0, base:=base), "reify_list", "reify_list_rec" (bound to
-fun lems =>
-  let reify' :=
-   reify base reify_base base_interp base_interp_beq try_make_transport_base_cps
-    ident reify_ident pident pident_arg_types pident_type_of_list_arg_types_beq
-    pident_of_typed_ident pident_arg_types_of_typed_ident reflect_ident_iota var
-    gets_inlined
-  in
-  let reify_list_rec :=
-   reify_list base reify_base base_interp base_interp_beq
-    try_make_transport_base_cps ident reify_ident pident pident_arg_types
-    pident_type_of_list_arg_types_beq pident_of_typed_ident
-    pident_arg_types_of_typed_ident reflect_ident_iota var gets_inlined
-  in
-  lazymatch eval hnf in lems with
-  | (?b, ?lem) :: ?lems =>
-      let rlem := reify' b lem in
-      let rlems := reify_list_rec lems in
-      constr:((rlem :: rlems))
-  | @Datatypes.nil _ =>
-      constr:((@Datatypes.nil
-                 (@Compile.rewrite_ruleT base ident var pident pident_arg_types)))
-  | _ =>
-      let List_map := eval cbv delta [map] in @map in
-      let lems :=
-       eval cbv beta iota in
-       (List_map _ _ (fun p : Prop => (include_interp, p)) lems)
-      in
-      reify_list_rec lems
-  end), "reify'" (bound to
-fun should_do_again lem =>
-  let base_type := constr:((base.type base)) in
-  let base_type_interp := constr:((@base.interp base base_interp)) in
-  reify_under_forall_types base_type base_type_interp lem
-   ltac:(fun ty_ctx cur_i lem =>
-           let __ := match goal with
-                     | _ => idtac "cont:" ty_ctx cur_i lem
-                     end in
-           let lem := equation_to_parts lem in
-           let __ :=
-            match goal with
-            | _ => idtac "reify_to_pattern_and_replacement_in_context" base
-            reify_base base_interp base_interp_beq try_make_transport_base_cps
-            ident reify_ident pident pident_arg_types
-            pident_type_of_list_arg_types_beq pident_of_typed_ident
-            pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var
-            gets_inlined should_do_again "constr:(1%positive)" lem
-            "(@expr.var_context.nil (base.type base) (fun _ => positive)"
-            end
-           in
-           let res :=
-            reify_to_pattern_and_replacement_in_context base reify_base base_interp
-             base_interp_beq try_make_transport_base_cps ident reify_ident pident
-             pident_arg_types pident_type_of_list_arg_types_beq
-             pident_of_typed_ident pident_arg_types_of_typed_ident
-             reflect_ident_iota ty_ctx var gets_inlined should_do_again
-             ltac:(constr:(1%positive)) lem
-             (@var_context.nil (base.type base) (fun _ => positive))
-           in
-           let __ := match goal with
-                     | _ => idtac "reify under res:" res
-                     end in
-           res)), "reify_under_forall_types", "_" (with
-lem:=forall (A B : Type) (a : A) (b : B), @fst A B (a, b) = a,
-base_type_interp:=@base.interp base base_interp0, base_type:=
-base.type base), "f" (bound to
-fun base_type base_type_interp lem cont => <ltac2::ltac2_eval@0> F base_type
-  base_type_interp lem cont),
-"<ltac2::ltac2_eval@0> F base_type base_type_interp lem cont",
-"F" (bound to fun ty_ctx cur_i lem => let v := cont ty_ctx cur_i lem in
-                                      refine
-                                      v), "cont" (bound to
-fun ty_ctx cur_i lem =>
-  let __ := match goal with
-            | _ => idtac "cont:" ty_ctx cur_i lem
-            end in
-  let lem := equation_to_parts lem in
-  let __ :=
-   match goal with
-   | _ => idtac "reify_to_pattern_and_replacement_in_context" base reify_base
-   base_interp base_interp_beq try_make_transport_base_cps ident reify_ident pident
-   pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident
-   pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var gets_inlined
-   should_do_again "constr:(1%positive)" lem
-   "(@expr.var_context.nil (base.type base) (fun _ => positive)"
-   end
-  in
-  let res :=
-   reify_to_pattern_and_replacement_in_context base reify_base base_interp
-    base_interp_beq try_make_transport_base_cps ident reify_ident pident
-    pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident
-    pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var gets_inlined
-    should_do_again ltac:(constr:(1%positive)) lem
-    (@var_context.nil (base.type base) (fun _ => positive))
-  in
-  let __ := match goal with
-            | _ => idtac "reify under res:" res
-            end in
-  res), "equation_to_parts", "equation_to_parts'",
-"(fun x : T => match P with
-               | P' => _
-               end)" (with side_conditions:=@Datatypes.nil bool,
-lem:=forall
-       (a : @base.interp base base_interp0
-              (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-                 (@PositiveMap.add (base.type base) 1%positive A
-                    (PositiveMap.empty (base.type base)))))
-       (b : @base.interp base base_interp0
-              (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-                 (@PositiveMap.add (base.type base) 2%positive B
-                    (@PositiveMap.add (base.type base) 1%positive A
-                       (PositiveMap.empty (base.type base)))))),
-     @fst
-       (@base.interp base base_interp0
-          (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-             (@PositiveMap.add (base.type base) 1%positive A
-                (PositiveMap.empty (base.type base)))))
-       (@base.interp base base_interp0
-          (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-             (@PositiveMap.add (base.type base) 2%positive B
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base))))))
-       (a, b) = a,
-T:=@base.interp base base_interp0
-     (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-        (@PositiveMap.add (base.type base) 1%positive A
-           (PositiveMap.empty (base.type base)))),
-P:=forall
-     b : @base.interp base base_interp0
-           (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-              (@PositiveMap.add (base.type base) 2%positive B
-                 (@PositiveMap.add (base.type base) 1%positive A
-                    (PositiveMap.empty (base.type base))))),
-   @fst
-     (@base.interp base base_interp0
-        (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-           (@PositiveMap.add (base.type base) 1%positive A
-              (PositiveMap.empty (base.type base)))))
-     (@base.interp base base_interp0
-        (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-           (@PositiveMap.add (base.type base) 2%positive B
-              (@PositiveMap.add (base.type base) 1%positive A
-                 (PositiveMap.empty (base.type base))))))
-     (x, b) = x), "equation_to_parts'", "(fun x : T => match P with
-                                                      | P' => _
-                                                      end)" (with
-side_conditions:=@Datatypes.nil bool,
-lem:=forall
-       b : @base.interp base base_interp0
-             (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-                (@PositiveMap.add (base.type base) 2%positive B
-                   (@PositiveMap.add (base.type base) 1%positive A
-                      (PositiveMap.empty (base.type base))))),
-     @fst
-       (@base.interp base base_interp0
-          (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-             (@PositiveMap.add (base.type base) 1%positive A
-                (PositiveMap.empty (base.type base)))))
-       (@base.interp base base_interp0
-          (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-             (@PositiveMap.add (base.type base) 2%positive B
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base))))))
-       (a, b) = a,
-T:=@base.interp base base_interp0
-     (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-        (@PositiveMap.add (base.type base) 2%positive B
-           (@PositiveMap.add (base.type base) 1%positive A
-              (PositiveMap.empty (base.type base))))),
-P:=@fst
-     (@base.interp base base_interp0
-        (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-           (@PositiveMap.add (base.type base) 1%positive A
-              (PositiveMap.empty (base.type base)))))
-     (@base.interp base base_interp0
-        (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-           (@PositiveMap.add (base.type base) 2%positive B
-              (@PositiveMap.add (base.type base) 1%positive A
-                 (PositiveMap.empty (base.type base))))))
-     (a, x) = a), "check_exact", "check_exact", "check_exact",
-"check_exact", "check_exact", "check_exact", "check_exact",
-"check_exact", "check_exact", "_" (with
-val:=@pattern.base.lookup_default ?X1197@{__:=var; __:=A}) and
-"exact (uconstr)", last call failed.
-Backtrace:
-
-Ill-typed evar instance
-Raised at Exninfo.iraise in file "clib/exninfo.ml", line 79, characters 4-11
-Called from Evarsolve.check_evar_instance in file "pretyping/evarsolve.ml", line 842, characters 38-88
-Called from Evarsolve.instantiate_evar in file "pretyping/evarsolve.ml", line 1517, characters 13-61
-Called from Evarsolve.evar_define in file "pretyping/evarsolve.ml", line 1750, characters 4-50
-Called from Evarsolve.solve_simple_eqn in file "pretyping/evarsolve.ml", line 1823, characters 14-79
-Called from Evarconv.evar_conv_x in file "pretyping/evarconv.ml", line 578, characters 19-125
-Called from Evarconv.unify_leq_delay in file "pretyping/evarconv.ml", line 1817, characters 8-45
-Called from Coercion.inh_conv_coerce_to_fail in file "pretyping/coercion.ml", line 622, characters 7-44
-Called from Coercion.inh_conv_coerce_to_gen in file "pretyping/coercion.ml", line 658, characters 33-111
-Called from Pretyping.Default.pretype_var in file "pretyping/pretyping.ml", line 627, characters 21-96
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1373, characters 21-85
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.type_uconstr in file "plugins/ltac/tacinterp.ml", line 1093, characters 2-57
-Called from Ltac_plugin__Internals.exact.(fun) in file "plugins/ltac/internals.ml", line 377, characters 17-85
-Called from Proofview.Goal.enter.f in file "engine/proofview.ml", line 1120, characters 40-46
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Cases.build_leaf in file "pretyping/cases.ml", line 1298, characters 17-79
-Called from Cases.compile.shift_problem in file "pretyping/cases.ml", line 1503, characters 25-41
-Called from Cases.compile_cases.compile_for_one_predicate in file "pretyping/cases.ml", line 2770, characters 25-55
-Called from Cases.list_try_compile.aux in file "pretyping/cases.ml", line 82, characters 10-13
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Cases.compile_cases in file "pretyping/cases.ml", line 2779, characters 23-71
-Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Cases.build_leaf in file "pretyping/cases.ml", line 1298, characters 17-79
-Called from Cases.compile.shift_problem in file "pretyping/cases.ml", line 1503, characters 25-41
-Called from Cases.compile_cases.compile_for_one_predicate in file "pretyping/cases.ml", line 2770, characters 25-55
-Called from Cases.list_try_compile.aux in file "pretyping/cases.ml", line 82, characters 10-13
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Cases.compile_cases in file "pretyping/cases.ml", line 2779, characters 23-71
-Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.solve in file "proofs/proof.ml", line 500, characters 31-52
-Called from ComTactic.solve_core.(fun) in file "vernac/comTactic.ml", line 46, characters 23-59
-Called from Declare.Proof.map_fold_endline in file "vernac/declare.ml", line 1457, characters 20-33
-Called from ComTactic.solve_core in file "vernac/comTactic.ml", line 43, characters 23-442
-Called from Vernacextend.vtmodifyproof.(fun) in file "vernac/vernacextend.ml", line 163, characters 32-47
-Called from Vernacinterp.interp_typed_vernac in file "vernac/vernacinterp.ml", line 20, characters 20-113
-Called from Vernacinterp.interp_control.(fun) in file "vernac/vernacinterp.ml", line 203, characters 24-69
-Called from Flags.with_modified_ref in file "lib/flags.ml", line 17, characters 14-17
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Vernacinterp.interp_gen.(fun) in file "vernac/vernacinterp.ml", line 253, characters 18-43
-Called from Vernacinterp.interp_gen in file "vernac/vernacinterp.ml", line 251, characters 6-279
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Stm.Reach.known_state.reach.(fun) in file "stm/stm.ml", line 2169, characters 20-47
-Called from Stm.Reach.known_state.resilient_tactic in file "stm/stm.ml", line 2111, characters 10-14
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Stm.State.define in file "stm/stm.ml", line 964, characters 6-10
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Stm.Reach.known_state.reach in file "stm/stm.ml", line 2320, characters 4-105
-Called from Stm.observe in file "stm/stm.ml", line 2421, characters 4-60
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Vernac.interp_vernac in file "toplevel/vernac.ml", line 68, characters 31-52
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Vernac.process_expr in file "toplevel/vernac.ml" (inlined), line 123, characters 2-60
-Called from Coqloop.process_toplevel_command in file "toplevel/coqloop.ml", line 415, characters 17-62
-Called from Coqloop.read_and_execute_base in file "toplevel/coqloop.ml", line 452, characters 4-39
-Called from Coqloop.read_and_execute in file "toplevel/coqloop.ml", line 458, characters 6-34
-
-*)

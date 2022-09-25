@@ -1,14 +1,1453 @@
-(* -*- mode: coq; coq-prog-args: ("-emacs" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,+undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes" "-R" "src/Rewriter" "Rewriter" "-I" "src/Rewriter/Util/plugins" "-top" "Rewriter.Rewriter.Examples" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand") -*- *)
-(* File reduced by coq-bug-minimizer from original input, then from 104176 lines to 97527 lines, then from 97560 lines to 3537 lines, then from 3550 lines to 3708 lines, then from 3713 lines to 3538 lines, then from 3551 lines to 3718 lines, then from 3723 lines to 3540 lines, then from 3553 lines to 3711 lines, then from 3716 lines to 3542 lines, then from 3555 lines to 3711 lines, then from 3716 lines to 3574 lines, then from 3587 lines to 7609 lines, then from 7612 lines to 3623 lines, then from 3636 lines to 5049 lines, then from 5052 lines to 4422 lines, then from 4435 lines to 4464 lines, then from 4469 lines to 4430 lines, then from 4441 lines to 4298 lines, then from 4311 lines to 6242 lines, then from 6245 lines to 4519 lines, then from 4533 lines to 4556 lines, then from 4562 lines to 4519 lines, then from 4533 lines to 5529 lines, then from 5535 lines to 5240 lines, then from 5254 lines to 5295 lines, then from 5301 lines to 5250 lines, then from 5264 lines to 5298 lines, then from 5304 lines to 5263 lines, then from 5277 lines to 5317 lines, then from 5323 lines to 5280 lines, then from 5294 lines to 5326 lines, then from 5332 lines to 5282 lines, then from 5296 lines to 5327 lines, then from 5333 lines to 5283 lines, then from 5297 lines to 5332 lines, then from 5338 lines to 5295 lines, then from 5301 lines to 5296 lines *)
+(* -*- mode: coq; coq-prog-args: ("-emacs" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,+undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes" "-w" "+implicit-core-hint-db,+implicits-in-term,+non-reversible-notation,+deprecated-intros-until-0,+deprecated-focus,+unused-intro-pattern,+deprecated-hint-constr,+fragile-hint-constr,+variable-collision,+unexpected-implicit-declaration,+omega-is-deprecated,+deprecated-instantiate-syntax,+non-recursive,+deprecated-hint-rewrite-without-locality,+deprecated-hint-without-locality,+deprecated-instance-without-locality,-undeclared-scope,+deprecated-typeclasses-transparency-without-locality,unsupported-attributes,-deprecated-native-compiler-option,-require-in-module" "-R" "src/Rewriter" "Rewriter" "-I" "src/Rewriter/Util/plugins" "-top" "Rewriter.Rewriter.Examples" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand" "-native-compiler" "ondemand") -*- *)
+(* File reduced by coq-bug-minimizer from original input, then from 104176 lines to 97527 lines, then from 97560 lines to 3537 lines, then from 3550 lines to 3708 lines, then from 3713 lines to 3538 lines, then from 3551 lines to 3718 lines, then from 3723 lines to 3540 lines, then from 3553 lines to 3711 lines, then from 3716 lines to 3542 lines, then from 3555 lines to 3711 lines, then from 3716 lines to 3574 lines, then from 3587 lines to 7609 lines, then from 7612 lines to 3623 lines, then from 3636 lines to 5049 lines, then from 5052 lines to 4422 lines, then from 4435 lines to 4464 lines, then from 4469 lines to 4430 lines, then from 4441 lines to 4298 lines, then from 4311 lines to 6242 lines, then from 6245 lines to 4519 lines, then from 4533 lines to 4556 lines, then from 4562 lines to 4519 lines, then from 4533 lines to 5529 lines, then from 5535 lines to 5240 lines, then from 5254 lines to 5295 lines, then from 5301 lines to 5250 lines, then from 5264 lines to 5298 lines, then from 5304 lines to 5263 lines, then from 5277 lines to 5317 lines, then from 5323 lines to 5280 lines, then from 5294 lines to 5326 lines, then from 5332 lines to 5282 lines, then from 5296 lines to 5327 lines, then from 5333 lines to 5283 lines, then from 5297 lines to 5332 lines, then from 5338 lines to 5295 lines, then from 5301 lines to 5296 lines, then from 5987 lines to 5485 lines, then from 5487 lines to 5359 lines, then from 5365 lines to 5360 lines, then from 5373 lines to 5359 lines, then from 5372 lines to 7065 lines, then from 7069 lines to 5748 lines, then from 5761 lines to 6103 lines, then from 6108 lines to 5815 lines, then from 5828 lines to 6860 lines, then from 6864 lines to 6134 lines, then from 6147 lines to 6392 lines, then from 6397 lines to 6142 lines, then from 6155 lines to 6371 lines, then from 6376 lines to 6164 lines, then from 6177 lines to 7804 lines, then from 7809 lines to 7565 lines, then from 7562 lines to 6668 lines, then from 6681 lines to 6834 lines, then from 6839 lines to 6670 lines, then from 6683 lines to 6749 lines, then from 6754 lines to 6681 lines, then from 6694 lines to 6783 lines, then from 6788 lines to 6681 lines, then from 6694 lines to 6789 lines, then from 6794 lines to 6694 lines, then from 6708 lines to 6691 lines, then from 6704 lines to 6765 lines, then from 6770 lines to 6708 lines, then from 6721 lines to 7317 lines, then from 7321 lines to 6717 lines, then from 6730 lines to 9814 lines, then from 9816 lines to 6772 lines, then from 9546 lines to 9574 lines, then from 9488 lines to 6773 lines, then from 6778 lines to 6774 lines *)
 (* coqc version 8.15.0 compiled with OCaml 4.11.2
    coqtop version 8.15.0
-   Modules that could not be inlined: Rewriter.Rewriter.Rewriter
-   Expected coqc runtime on this file: 2.329 sec *)
+   Expected coqc runtime on this file: 2.403 sec *)
 Require Ltac2.Ltac2.
-Require Rewriter.Rewriter.Rewriter.
+Require Coq.FSets.FMapPositive.
+Require Coq.MSets.MSetPositive.
 
 Axiom proof_admitted : False.
 Tactic Notation "admit" := abstract case proof_admitted.
+
+Global Set Asymmetric Patterns.
+Module Export Prod.
+
+Scheme Equality for prod.
+Definition prod_rect_nodep {A B P} : (A -> B -> P) -> A * B -> P.
+Admitted.
+
+Ltac head expr :=
+  match expr with
+  | ?f _ => head f
+  | _ => expr
+  end.
+Reserved Infix "@" (left associativity, at level 11).
+Reserved Notation "A <-- X ; B" (at level 70, X at next level, right associativity, format "'[v' A  <--  X ; '/' B ']'").
+Reserved Notation "A <----- X ; B" (at level 70, X at next level, right associativity, format "'[v' A  <-----  X ; '/' B ']'").
+
+Reserved Notation "'λ' x .. y , t" (at level 200, x binder, y binder, right associativity, format "'λ'  x .. y , '//' t").
+Reserved Notation "~> R" (at level 70).
+Reserved Notation "A ~> R" (at level 99).
+Reserved Notation "'return' x" (at level 70, format "'return'  x").
+
+Reserved Notation "$$ x" (at level 9, x at level 9, format "$$ x").
+Reserved Notation "# x" (at level 9, x at level 9, format "# x").
+Module Export Option.
+
+Module Export Thunked.
+Definition option_rect {A} P (S_case : A -> P) (N_case : unit -> P) (o : option A) : P.
+Admitted.
+  Delimit Scope option_scope with option.
+
+Module Export NatUtil.
+Definition nat_rect_nodep {P} : P -> (nat -> P -> P) -> nat -> P.
+Admitted.
+Definition nat_rect_arrow_nodep {P Q} := @nat_rect_nodep (P -> Q).
+
+Module Thunked.
+Definition nat_rect P (O_case : unit -> P) (S_case : nat -> P -> P) (n : nat) : P.
+Admitted.
+End Thunked.
+
+Ltac constr_fail :=
+  let __ := match goal with _ => fail 1 "Constr construction failed.  Please look at the message log (*coq*, or run your tactic again inside Fail or try) to see more details" end in
+  ().
+
+Ltac constr_fail_with msg_tac :=
+  let __ := match goal with _ => msg_tac () end in
+  constr_fail.
+Module Export ListUtil.
+Definition list_case
+           {A} (P : list A -> Type) (N : P nil) (C : forall x xs, P (cons x xs))
+           (ls : list A)
+  : P ls.
+Admitted.
+Definition list_rect_nodep {A} {P} : P -> (A -> list A -> P -> P) -> list A -> P.
+Admitted.
+Definition list_rect_arrow_nodep {A P Q} := @list_rect_nodep A (P -> Q).
+
+Module Export Thunked.
+Definition list_rect {A} P (N : Datatypes.unit -> P) (C : A -> list A -> P -> P) (ls : list A) : P.
+Admitted.
+Definition list_case {A} P (N : Datatypes.unit -> P) (C : A -> list A -> P) (ls : list A) : P.
+Admitted.
+
+  Module Export Reflect.
+Import Coq.Bool.Bool.
+
+Lemma reflect_to_dec {P b1 b2} : reflect P b1 -> (b1 = b2) -> (if b2 then P else ~P).
+Admitted.
+
+Existing Class reflect.
+Definition decb (P : Prop) {b : bool} {H : reflect P b} := b.
+Notation reflect_rel P b := (forall x y, reflect (P x y) (b x y)).
+Definition decb_rel {A B} (P : A -> B -> Prop) {b : A -> B -> bool} {H : reflect_rel P b} := b.
+Module Export PreCommon.
+
+Import Ltac2.Init.
+
+Module Export Pre.
+  Module Export ident.
+    Definition literal {T} (v : T) := v.
+    Definition eagerly {T} (v : T) := v.
+    Definition gets_inlined (real_val : bool) {T} (v : T) : bool := real_val.
+  End ident.
+
+  Ltac2 mutable reify_preprocess_extra (ctx_tys : binder list) (term : constr) := term.
+  Ltac2 mutable reify_ident_preprocess_extra (ctx_tys : binder list) (term : constr) := term.
+
+  Ltac2 mutable reify_debug_level : int := 0.
+
+  End Pre.
+
+End PreCommon.
+Import Coq.Lists.List.
+
+Module Option.
+  Module Export List.
+    Section map.
+      Context {A B}
+              (f : A -> option B).
+Fixpoint map (ls : list A) : list B.
+Admitted.
+    End map.
+
+    End List.
+End Option.
+Definition Let_In {A P} (x : A) (f : forall a : A, P a) : P x.
+Admitted.
+
+Delimit Scope cps_scope with cps.
+
+Notation "~> R" := (forall T (_:R->T), T) : type_scope.
+
+Notation "A ~> R" := (A -> ~>R) : type_scope.
+
+Definition cpsreturn {T} (x:T) := x.
+
+Notation "'return' x" := (cpsreturn (fun T (continuation:_->T) => continuation x)) : cps_scope.
+Definition cps_option_bind {A B} (v:~> option A) (f:A ~> option B) : ~> option B.
+Admitted.
+Notation "x' <-- v ; C" := (cps_option_bind v%cps (fun x' => C%cps)) : cps_scope.
+Module Export Bool.
+Module Export Thunked.
+Definition bool_rect P (t f : Datatypes.unit -> P) (b : bool) : P.
+Admitted.
+Module Export Language.
+Import Coq.ZArith.ZArith.
+Import Coq.Classes.Morphisms.
+Import Coq.Relations.Relation_Definitions.
+
+Import EqNotations.
+Module Export Compilers.
+  Module Export type.
+    Inductive type {base_type : Type} := base (t : base_type) | arrow (s d : type).
+    Global Arguments type : clear implicits.
+Fixpoint interp {base_type} (base_interp : base_type -> Type) (t : type base_type) : Type.
+exact (match t with
+         | base t => base_interp t
+         | arrow s d => @interp _ base_interp s -> @interp _ base_interp d
+         end).
+Defined.
+Fixpoint related {base_type} {base_interp : base_type -> Type} (R : forall t, relation (base_interp t)) {t : type base_type}
+      : relation (interp base_interp t).
+Admitted.
+
+    Notation eqv := (@related _ _ (fun _ => eq)).
+
+    Class try_make_transport_cpsT {base : Type}
+      := try_make_transport_cpsv : forall (P : base -> Type) t1 t2, ~> option (P t1 -> P t2).
+    Global Arguments try_make_transport_cpsT : clear implicits.
+
+    Class try_make_transport_cps_correctT {base : Type}
+          {base_beq : base -> base -> bool}
+          {try_make_transport_cps : @type.try_make_transport_cpsT base}
+          {reflect_base_beq : reflect_rel (@eq base) base_beq}
+      := try_make_transport_cps_correctP
+         : forall P t1 t2,
+          try_make_transport_cps P t1 t2
+          = fun T k
+            => k match Sumbool.sumbool_of_bool (base_beq t1 t2) with
+                 | left pf => Some (rew [fun t => P t1 -> P t] (reflect_to_dec _ pf) in id)
+                 | right _ => None
+                 end.
+    Global Arguments try_make_transport_cps_correctT base {_ _ _}.
+
+    Section transport_cps.
+      Context {base_type : Type}.
+      Context {try_make_transport_base_type_cps : @try_make_transport_cpsT base_type}.
+Definition try_transport (P : type base_type -> Type) (t1 t2 : type base_type) (v : P t1) : option (P t2).
+Admitted.
+    End transport_cps.
+
+  End type.
+  Notation type := type.type.
+  Delimit Scope etype_scope with etype.
+  Bind Scope etype_scope with type.type.
+  Global Arguments type.base {_} _%etype.
+  Infix "->" := type.arrow : etype_scope.
+  Module base.
+    Module type.
+      Inductive type {base_type : Type} := type_base (t : base_type) | prod (A B : type) | list (A : type) | option (A : type) | unit.
+      Global Arguments type : clear implicits.
+      Class BaseTypeHasNatT {base : Type} := nat : base.
+      Global Arguments BaseTypeHasNatT : clear implicits.
+    End type.
+    Notation type := type.type.
+
+    Class BaseHasNatCorrectT {base} {base_interp : base -> Type} {baseHasNat : type.BaseTypeHasNatT base} :=
+      {
+        to_nat : base_interp type.nat -> nat;
+        of_nat : nat -> base_interp type.nat;
+        of_to_nat : forall (P : _ -> Type) x, P (of_nat (to_nat x)) -> P x;
+        to_of_nat : forall (P : _ -> Type) x, P (to_nat (of_nat x)) -> P x
+      }.
+    Global Arguments BaseHasNatCorrectT {base} base_interp {_}.
+
+    Fixpoint interp {base} (base_interp : base -> Type) (ty : type base)
+      := match ty with
+         | type.type_base t => base_interp t
+         | type.unit => Datatypes.unit
+         | type.prod A B => interp base_interp A * interp base_interp B
+         | type.list A => Datatypes.list (interp base_interp A)
+         | type.option A => Datatypes.option (interp base_interp A)
+         end%type.
+Fixpoint interp_beq {base base_interp} (base_interp_beq : forall b : base, base_interp b -> base_interp b -> bool) {t}
+      : interp base_interp t -> interp base_interp t -> bool.
+Admitted.
+
+    Fixpoint try_make_transport_cps
+             {base}
+             {try_make_transport_base_type_cps : @type.try_make_transport_cpsT base}
+             (P : type base -> Type) (t1 t2 : type base)
+      : ~> option (P t1 -> P t2)
+      := match t1, t2 with
+         | type.type_base t1, type.type_base t2
+           => type.try_make_transport_cpsv (fun t => P (type.type_base t)) t1 t2
+         | type.unit, type.unit
+           => (return (Some (fun x => x)))
+         | type.prod A B, type.prod A' B'
+           => (trA <-- try_make_transport_cps (fun A => P (type.prod A _)) _ _;
+                trB <-- try_make_transport_cps (fun B => P (type.prod _ B)) _ _;
+              return (Some (fun v => trB (trA v))))
+         | type.list A, type.list A' => try_make_transport_cps (fun A => P (type.list A)) A A'
+         | type.option A, type.option A' => try_make_transport_cps (fun A => P (type.option A)) A A'
+         | type.type_base _, _
+         | type.prod _ _, _
+         | type.list _, _
+         | type.option _, _
+         | type.unit, _
+           => (return None)
+         end%cps.
+
+    Global Hint Extern 1 (@type.try_make_transport_cpsT (type ?base)) => notypeclasses refine (@try_make_transport_cps base _) : typeclass_instances.
+  End base.
+  Infix "*" := base.type.prod : etype_scope.
+
+  Module pattern.
+    Module base.
+      Module Export type.
+        Inductive type {base_type : Type} := var (p : positive) | type_base (t : base_type) | prod (A B : type) | list (A : type) | option (A : type) | unit.
+        Global Arguments type : clear implicits.
+      End type.
+      Notation type := type.type.
+
+      Module Export Notations.
+        Delimit Scope ptype_scope with ptype.
+        Notation "A * B" := (type.prod A%ptype B%ptype) : ptype_scope.
+        Notation "A -> B" := (@type.arrow (base.type _) A%ptype B%ptype) : ptype_scope.
+      End Notations.
+    End base.
+    Notation type base := (type.type (base.type base)).
+  End pattern.
+  Export pattern.base.Notations.
+
+  Module Export expr.
+    Section with_var.
+      Context {base_type : Type}.
+      Local Notation type := (type base_type).
+      Context {ident : type -> Type}
+              {var : type -> Type}.
+
+      Inductive expr : type -> Type :=
+      | Ident {t} (idc : ident t) : expr t
+      | Var {t} (v : var t) : expr t
+      | Abs {s d} (f : var s -> expr d) : expr (s -> d)
+      | App {s d} (f : expr (s -> d)) (x : expr s) : expr d
+      | LetIn {A B} (x : expr A) (f : var A -> expr B) : expr B
+      .
+    End with_var.
+
+    Delimit Scope expr_scope with expr.
+      Infix "@" := App : expr_scope.
+      Notation "'λ' x .. y , f" := (Abs (fun x => .. (Abs (fun y => f%expr)) .. )) : expr_scope.
+      Notation "'$$' x" := (Var x) : expr_scope.
+
+  Module Export ident.
+    Section generic.
+      Context {base : Type}
+              {base_interp : base -> Type}.
+      Local Notation base_type := (@base.type base).
+      Local Notation type := (@type.type base_type).
+      Local Notation base_type_interp := (@base.interp base base_interp).
+      Context {ident var : type -> Type}.
+      Class BuildIdentT :=
+        {
+          ident_Literal : forall {t}, base_interp t -> ident (type.base (base.type.type_base t));
+          ident_nil : forall {t}, ident (type.base (base.type.list t));
+          ident_cons : forall {t}, ident (type.base t -> type.base (base.type.list t) -> type.base (base.type.list t));
+          ident_Some : forall {t}, ident (type.base t -> type.base (base.type.option t));
+          ident_None : forall {t}, ident (type.base (base.type.option t));
+          ident_pair : forall {A B}, ident (type.base A -> type.base B -> type.base (A * B));
+          ident_tt : ident (type.base base.type.unit)
+        }.
+      Context {buildIdent : BuildIdentT}.
+
+      Section correctness_class.
+        Context {ident_interp : forall t, ident t -> type.interp (base.interp base_interp) t}.
+
+        Class BuildInterpIdentCorrectT :=
+          {
+            interp_ident_Literal : forall {t v}, ident_interp (type.base (base.type.type_base t)) (ident_Literal (t:=t) v) = ident.literal v;
+            interp_ident_nil : forall {t}, ident_interp _ (ident_nil (t:=t)) = nil;
+            interp_ident_cons : forall {t}, ident_interp _ (ident_cons (t:=t)) = cons;
+            interp_ident_Some : forall {t}, ident_interp _ (ident_Some (t:=t)) = Some;
+            interp_ident_None : forall {t}, ident_interp _ (ident_None (t:=t)) = None;
+            interp_ident_pair : forall {A B}, ident_interp _ (ident_pair (A:=A) (B:=B)) = pair;
+          }.
+      End correctness_class.
+
+      Local Notation expr := (@expr.expr base_type ident var).
+Definition reify_list {t} (ls : list (expr (type.base t))) : expr (type.base (base.type.list t)).
+Admitted.
+Fixpoint smart_Literal {t:base_type} : base_type_interp t -> expr (type.base t).
+Admitted.
+
+      Section eager_rect.
+Let type_base' (x : base) : @base.type base.
+exact (base.type.type_base x).
+Defined.
+        Let base' {bt} (x : Compilers.base.type bt) : type.type _ := type.base x.
+        Local Coercion base' : base.type >-> type.type.
+        Local Coercion type_base' : base >-> base.type.
+        Import base.type.
+
+        Context {ident_interp : forall t, ident t -> type.interp (base.interp base_interp) t}.
+        Context {baseTypeHasNat : BaseTypeHasNatT base}.
+        Local Notation nat := (match nat return base with x => x end).
+
+        Inductive restricted_ident : type.type base_type -> Type :=
+        | restricted_ident_nat_rect {P:base_type} : restricted_ident ((unit -> P) -> (nat -> P -> P) -> nat -> P)
+        | restricted_ident_nat_rect_arrow {P Q:base_type} : restricted_ident ((P -> Q) -> (nat -> (P -> Q) -> (P -> Q)) -> nat -> P -> Q)
+        | restricted_ident_list_rect {A P:base_type} : restricted_ident ((unit -> P) -> (A -> list A -> P -> P) -> list A -> P)
+        | restricted_ident_list_rect_arrow {A P Q:base_type} : restricted_ident ((P -> Q) -> (A -> list A -> (P -> Q) -> (P -> Q)) -> list A -> P -> Q)
+        | restricted_ident_List_nth_default {T:base_type} : restricted_ident (T -> list T -> nat -> T)
+        | restricted_ident_eager_nat_rect {P:base_type}: restricted_ident ((unit -> P) -> (nat -> P -> P) -> nat -> P)
+        | restricted_ident_eager_nat_rect_arrow {P Q:base_type} : restricted_ident ((P -> Q) -> (nat -> (P -> Q) -> (P -> Q)) -> nat -> P -> Q)
+        | restricted_ident_eager_list_rect {A P:base_type} : restricted_ident ((unit -> P) -> (A -> list A -> P -> P) -> list A -> P)
+        | restricted_ident_eager_list_rect_arrow {A P Q:base_type} : restricted_ident ((P -> Q) -> (A -> list A -> (P -> Q) -> (P -> Q)) -> list A -> P -> Q)
+        | restricted_ident_eager_List_nth_default {T:base_type} : restricted_ident (T -> list T -> nat -> T)
+        .
+
+        Class BuildEagerIdentT :=
+          {
+            ident_nat_rect {P:base_type} : ident ((unit -> P) -> (nat -> P -> P) -> nat -> P)
+            ; ident_nat_rect_arrow {P Q:base_type} : ident ((P -> Q) -> (nat -> (P -> Q) -> (P -> Q)) -> nat -> P -> Q)
+            ; ident_list_rect {A P:base_type} : ident ((unit -> P) -> (A -> list A -> P -> P) -> list A -> P)
+            ; ident_list_rect_arrow {A P Q:base_type} : ident ((P -> Q) -> (A -> list A -> (P -> Q) -> (P -> Q)) -> list A -> P -> Q)
+            ; ident_List_nth_default {T:base_type} : ident (T -> list T -> nat -> T)
+            ; ident_eager_nat_rect {P:base_type}: ident ((unit -> P) -> (nat -> P -> P) -> nat -> P)
+            ; ident_eager_nat_rect_arrow {P Q:base_type} : ident ((P -> Q) -> (nat -> (P -> Q) -> (P -> Q)) -> nat -> P -> Q)
+            ; ident_eager_list_rect {A P:base_type} : ident ((unit -> P) -> (A -> list A -> P -> P) -> list A -> P)
+            ; ident_eager_list_rect_arrow {A P Q:base_type} : ident ((P -> Q) -> (A -> list A -> (P -> Q) -> (P -> Q)) -> list A -> P -> Q)
+            ; ident_eager_List_nth_default {T:base_type} : ident (T -> list T -> nat -> T)
+          }.
+
+        Context {buildEagerIdent : BuildEagerIdentT}.
+
+        Section correctness_class.
+          Context {baseHasNatCorrect : base.BaseHasNatCorrectT base_interp}.
+
+          Local Notation of_nat := (@base.of_nat base base_interp _ baseHasNatCorrect).
+          Local Notation to_nat := (@base.to_nat base base_interp _ baseHasNatCorrect).
+
+          Class BuildInterpEagerIdentCorrectT :=
+            {
+              interp_ident_nat_rect {P:base_type}
+              : ident_interp _ (@ident_nat_rect _ P)
+                = (fun O_case S_case n
+                   => Thunked.nat_rect (base_type_interp P) O_case (fun n => S_case (of_nat n)) (to_nat n))
+                    :> ((Datatypes.unit -> _) -> (base_type_interp nat -> _ -> _) -> base_type_interp nat -> _)
+
+              ; interp_ident_nat_rect_arrow {P Q:base_type}
+                : ident_interp _ (@ident_nat_rect_arrow _ P Q)
+                  = (fun O_case S_case n
+                     => nat_rect_arrow_nodep O_case (fun n => S_case (of_nat n)) (to_nat n))
+                      :> ((base_type_interp P -> base_type_interp Q) -> (base_type_interp nat -> (base_type_interp P -> base_type_interp Q) -> base_type_interp P -> base_type_interp Q) -> base_type_interp nat -> base_type_interp P -> base_type_interp Q)
+
+              ; interp_ident_list_rect {A P:base_type}
+                : ident_interp _ (@ident_list_rect _ A P) = Thunked.list_rect _
+              ; interp_ident_list_rect_arrow {A P Q:base_type}
+                : ident_interp _ (@ident_list_rect_arrow _ A P Q) = @list_rect_arrow_nodep _ (base_type_interp P) (base_type_interp Q)
+              ; interp_ident_List_nth_default {T:base_type}
+                : ident_interp _ (@ident_List_nth_default _ T)
+                  = (fun d ls n => @List.nth_default _ d ls (to_nat n))
+                      :> (base_type_interp T -> Datatypes.list (base_type_interp T) -> base_interp nat -> base_type_interp T)
+
+              ; interp_ident_eager_nat_rect {P:base_type}
+                : ident_interp _ (@ident_eager_nat_rect _ P)
+                  = (fun O_case S_case n
+                     => ident.eagerly Thunked.nat_rect (base_type_interp P) O_case (fun n => S_case (of_nat n)) (to_nat n))
+                      :> ((Datatypes.unit -> _) -> (base_type_interp nat -> _ -> _) -> base_type_interp nat -> _)
+
+              ; interp_ident_eager_nat_rect_arrow {P Q:base_type}
+                : ident_interp _ (@ident_eager_nat_rect_arrow _ P Q)
+                  = (fun O_case S_case n
+                     => ident.eagerly (@nat_rect_arrow_nodep) _ _ O_case (fun n => S_case (of_nat n)) (to_nat n))
+                      :> ((base_type_interp P -> base_type_interp Q) -> (base_type_interp nat -> (base_type_interp P -> base_type_interp Q) -> base_type_interp P -> base_type_interp Q) -> base_type_interp nat -> base_type_interp P -> base_type_interp Q)
+
+              ; interp_ident_eager_list_rect {A P:base_type}
+                : ident_interp _ (@ident_eager_list_rect _ A P) = ident.eagerly Thunked.list_rect _
+              ; interp_ident_eager_list_rect_arrow {A P Q:base_type}
+                : ident_interp _ (@ident_eager_list_rect_arrow _ A P Q) = ident.eagerly (@list_rect_arrow_nodep) _ (base_type_interp P) (base_type_interp Q)
+              ; interp_ident_eager_List_nth_default {T:base_type}
+                : ident_interp _ (@ident_eager_List_nth_default _ T)
+                  = (fun d ls n => ident.eagerly (@List.nth_default) _ d ls (to_nat n))
+                      :> (base_type_interp T -> Datatypes.list (base_type_interp T) -> base_interp nat -> base_type_interp T)
+            }.
+        End correctness_class.
+Definition fromRestrictedIdent {t} (idc : restricted_ident t) : ident t.
+exact (match idc with
+             | restricted_ident_nat_rect P => ident_nat_rect
+             | restricted_ident_nat_rect_arrow P Q => ident_nat_rect_arrow
+             | restricted_ident_list_rect A P => ident_list_rect
+             | restricted_ident_list_rect_arrow A P Q => ident_list_rect_arrow
+             | restricted_ident_List_nth_default T => ident_List_nth_default
+             | restricted_ident_eager_nat_rect P => ident_eager_nat_rect
+             | restricted_ident_eager_nat_rect_arrow P Q => ident_eager_nat_rect_arrow
+             | restricted_ident_eager_list_rect A P => ident_eager_list_rect
+             | restricted_ident_eager_list_rect_arrow A P Q => ident_eager_list_rect_arrow
+             | restricted_ident_eager_List_nth_default T => ident_eager_List_nth_default
+             end).
+Defined.
+
+        Class ToRestrictedIdentT :=
+          toRestrictedIdent : forall {t}, ident t -> Datatypes.option (restricted_ident t).
+
+        Context {toRestrictedIdent : ToRestrictedIdentT}.
+
+        Class ToFromRestrictedIdentT :=
+          {
+            transparent_toFromRestrictedIdent_eq : forall {t} (idc : restricted_ident t),
+              toRestrictedIdent _ (fromRestrictedIdent idc) = Datatypes.Some idc
+            ; transparent_fromToRestrictedIdent_eq : forall {t} (idc : ident t),
+                option_map fromRestrictedIdent (toRestrictedIdent _ idc) = option_map (fun _ => idc) (toRestrictedIdent _ idc)
+          }.
+
+        Context {toFromRestrictedIdent : ToFromRestrictedIdentT}.
+
+        Local Coercion fromRestrictedIdent : restricted_ident >-> ident.
+
+        Section eager_ident_rect.
+          Context (R : forall t, ident t -> Type)
+                  (eager_nat_rect_f : forall P, R _ (@ident_eager_nat_rect _ P))
+                  (eager_nat_rect_arrow_f : forall P Q, R _ (@ident_eager_nat_rect_arrow _ P Q))
+                  (eager_list_rect_f : forall A P, R _ (@ident_eager_list_rect _ A P))
+                  (eager_list_rect_arrow_f : forall A P Q, R _ (@ident_eager_list_rect_arrow _ A P Q))
+                  (eager_List_nth_default_f : forall T, R _ (@ident_eager_List_nth_default _ T))
+                  {t} (idc : ident t).
+Definition eager_ident_rect
+            : Datatypes.option (R t idc).
+exact (((match toRestrictedIdent _ idc as idc'
+                       return match option_map (fun _ => idc) idc' with
+                              | Some idc' => Datatypes.option (R t idc')
+                              | None => Datatypes.option (R t idc)
+                              end -> Datatypes.option (R t idc)
+                 with
+                 | Some _ => fun v => v
+                 | None => fun v => v
+                 end)
+                  (rew [fun idc' => match idc' with
+                                    | Datatypes.Some idc' => Datatypes.option (R _ idc')
+                                    | Datatypes.None => Datatypes.option (R _ idc)
+                                    end]
+                       transparent_fromToRestrictedIdent_eq idc in
+                      match toRestrictedIdent _ idc as idc'
+                            return match option_map fromRestrictedIdent idc' with
+                                   | Some idc' => Datatypes.option (R t idc')
+                                   | None => Datatypes.option (R t idc)
+                                   end
+                      with
+                      | Datatypes.None => Datatypes.None
+                      | Datatypes.Some idc'
+                        => match idc' return Datatypes.option (R _ idc') with
+                           | restricted_ident_nat_rect _
+                           | restricted_ident_nat_rect_arrow _ _
+                           | restricted_ident_list_rect _ _
+                           | restricted_ident_list_rect_arrow _ _ _
+                           | restricted_ident_List_nth_default _
+                             => Datatypes.None
+                           | restricted_ident_eager_nat_rect P => Datatypes.Some (eager_nat_rect_f P)
+                           | restricted_ident_eager_nat_rect_arrow P Q => Datatypes.Some (eager_nat_rect_arrow_f P Q)
+                           | restricted_ident_eager_list_rect A P => Datatypes.Some (eager_list_rect_f A P)
+                           | restricted_ident_eager_list_rect_arrow A P Q => Datatypes.Some (eager_list_rect_arrow_f A P Q)
+                           | restricted_ident_eager_List_nth_default T => Datatypes.Some (eager_List_nth_default_f T)
+                           end
+                      end))).
+Defined.
+        End eager_ident_rect.
+      End eager_rect.
+    End generic.
+    Global Arguments BuildIdentT {base base_interp} ident, {base} base_interp ident.
+    Global Arguments ToRestrictedIdentT {_} ident {_}.
+    Global Arguments BuildEagerIdentT {_} ident {_}.
+    Global Arguments BuildInterpEagerIdentCorrectT {_ _ _} ident_interp {_ _ _}.
+    Global Arguments ToFromRestrictedIdentT {_} ident {_ _ _}.
+    Global Arguments BuildInterpIdentCorrectT {_ _ _ _} _.
+      Notation "# x" := (@expr.Ident _ _ _ _ x) : expr_scope.
+
+  Module Import invert_expr.
+    Section with_container.
+      Context {base : Type}
+              {base_interp : base -> Type}
+              {try_make_transport_base_type_cps : @type.try_make_transport_cpsT base}.
+      Local Notation base_type := (@base.type base).
+      Local Notation type := (@type.type base_type).
+      Context {ident var : type -> Type}.
+      Class InvertIdentT :=
+        {
+          invert_ident_Literal : forall {t}, ident t -> option (type.interp (base.interp base_interp) t);
+          is_nil : forall {t}, ident t -> bool;
+          is_cons : forall {t}, ident t -> bool;
+          is_Some : forall {t}, ident t -> bool;
+          is_None : forall {t}, ident t -> bool;
+          is_pair : forall {t}, ident t -> bool;
+          is_tt : forall {t}, ident t -> bool
+        }.
+      Context {invertIdent : InvertIdentT}.
+
+      Section correctness_class.
+        Context {buildIdent : ident.BuildIdentT base_interp ident}.
+
+        Class BuildInvertIdentCorrectT :=
+          {
+            invert_ident_Literal_correct
+            : forall {t idc v},
+              invert_ident_Literal (t:=t) idc = Some v
+              <-> match t return ident t -> type.interp (base.interp base_interp) t -> Prop with
+                  | type.base (base.type.type_base t)
+                    => fun idc v => idc = ident.ident_Literal (t:=t) v
+                  | _ => fun _ _ => False
+                  end idc v;
+            is_nil_correct
+            : forall {t idc},
+                is_nil (t:=t) idc = true
+                <-> match t return ident t -> Prop with
+                    | type.base (base.type.list t)
+                      => fun idc => idc = ident.ident_nil (t:=t)
+                    | _ => fun _ => False
+                    end idc;
+            is_cons_correct
+            : forall {t idc},
+                is_cons (t:=t) idc = true
+                <-> match t return ident t -> Prop with
+                    | type.base t -> type.base (base.type.list _) -> type.base (base.type.list _)
+                      => fun idc => existT _ _ idc = existT _ _ (ident.ident_cons (t:=t)) :> sigT ident
+                    | _ => fun _ => False
+                    end%etype idc;
+            is_Some_correct
+            : forall {t idc},
+                is_Some (t:=t) idc = true
+                <-> match t return ident t -> Prop with
+                    | type.base t -> type.base (base.type.option _)
+                      => fun idc => existT _ _ idc = existT _ _ (ident.ident_Some (t:=t)) :> sigT ident
+                    | _ => fun _ => False
+                    end%etype idc;
+            is_None_correct
+            : forall {t idc},
+                is_None (t:=t) idc = true
+                <-> match t return ident t -> Prop with
+                    | type.base (base.type.option t)
+                      => fun idc => idc = ident.ident_None (t:=t)
+                    | _ => fun _ => False
+                    end idc;
+            is_pair_correct
+            : forall {t idc},
+                is_pair (t:=t) idc = true
+                <-> match t return ident t -> Prop with
+                    | type.base A -> type.base B -> type.base (base.type.prod _ _)
+                      => fun idc => existT _ _ idc = existT _ _ (ident.ident_pair (A:=A) (B:=B)) :> sigT ident
+                    | _ => fun _ => False
+                    end%etype idc;
+            is_tt_correct
+            : forall {t idc},
+                is_tt (t:=t) idc = true
+                <-> match t return ident t -> Prop with
+                    | type.base base.type.unit
+                      => fun idc => idc = ident.ident_tt
+                    | _ => fun _ => False
+                    end%etype idc;
+          }.
+      End correctness_class.
+
+      Local Notation expr := (@expr.expr base_type ident var).
+Definition reflect_list {t} (e : expr (type.base (base.type.list t)))
+        : option (list (expr (type.base t))).
+Admitted.
+Definition invert_Literal {t} (e : expr t)
+        : option (type.interp (base.interp base_interp) t).
+Admitted.
+    End with_container.
+    Global Arguments InvertIdentT {base base_interp} ident, {base} base_interp ident.
+
+  Module Export DefaultValue.
+
+    Module Export type.
+      Module Export base.
+        Class DefaultT {base : Type} {base_interp : base -> Type}
+          := defaultv : forall {t}, base_interp t.
+
+        Module Export Classes.
+    Class ExprInfoT :=
+      {
+        base : Type;
+        ident : type (base.type base) -> Type;
+        base_interp : base -> Type;
+        ident_interp : forall t, ident t -> type.interp (base.interp base_interp) t
+      }.
+
+    Class ExprExtraInfoT {exprInfo : ExprInfoT} :=
+      {
+        base_beq : base -> base -> bool;
+        base_interp_beq : forall {t1 t2}, base_interp t1 -> base_interp t2 -> bool;
+        try_make_transport_base_cps :> type.try_make_transport_cpsT base;
+        baseHasNat :> base.type.BaseTypeHasNatT base;
+        buildIdent :> ident.BuildIdentT base_interp ident;
+        toRestrictedIdent :> ident.ToRestrictedIdentT ident;
+        buildEagerIdent :> ident.BuildEagerIdentT ident;
+        invertIdent :> InvertIdentT base_interp ident;
+        defaultBase :> @DefaultValue.type.base.DefaultT base base_interp;
+        reflect_base_beq :> reflect_rel (@eq base) base_beq;
+        reflect_base_interp_beq :> forall {t}, reflect_rel (@eq (base_interp t)) (@base_interp_beq t t);
+        try_make_transport_base_cps_correct :> type.try_make_transport_cps_correctT base;
+        baseHasNatCorrect :> base.BaseHasNatCorrectT base_interp;
+        toFromRestrictedIdent :> ident.ToFromRestrictedIdentT ident;
+        buildInvertIdentCorrect :> BuildInvertIdentCorrectT;
+        buildInterpIdentCorrect :> ident.BuildInterpIdentCorrectT ident_interp;
+        buildInterpEagerIdentCorrect :> ident.BuildInterpEagerIdentCorrectT ident_interp;
+        ident_interp_Proper :> forall t, Proper (eq ==> type.eqv) (ident_interp t)
+      }.
+Module Export IdentifiersBasicLibrary.
+
+Module Export Compilers.
+  Module Export Basic.
+    Module Export GallinaAndReifiedIdentList.
+      Inductive t := nil | cons {T1 T2 : Type} (v1 : T1) (v2 : T2) (vs : t).
+    End GallinaAndReifiedIdentList.
+
+    Module Export GoalType.
+
+      Class ExprReifyInfoT {exprInfo : Classes.ExprInfoT} :=
+        {
+          all_base_and_interp : list (Classes.base * Type)
+          ; all_ident_and_interp : GallinaAndReifiedIdentList.t
+        }.
+
+      Record package :=
+        {
+          exprInfo : Classes.ExprInfoT
+          ; exprExtraInfo : @Classes.ExprExtraInfoT exprInfo
+          ; exprReifyInfo : @ExprReifyInfoT exprInfo
+          ; ident_is_var_like : forall t (idc : Classes.ident t), Datatypes.bool
+        }.
+      Module Export PrimitiveSigma.
+
+Local Set Primitive Projections.
+Module Import Primitive.
+  Record sigT {A} P := existT { projT1 : A ; projT2 : P projT1 }.
+  Global Arguments existT {_} _ _ _.
+  Global Arguments projT1 {_ _} _.
+  Global Arguments projT2 {_ _} _.
+    Notation "{ x : A  & P }" := (sigT (A:=A) (fun x => P)) : type_scope.
+
+Module Export IdentifiersLibrary.
+Import Coq.FSets.FMapPositive.
+Import Coq.MSets.MSetPositive.
+Module Export Compilers.
+
+  Local Notation type_of_list := (fold_right (fun A B => prod A B) unit).
+  Local Notation type_of_list_cps := (fold_right (fun a K => a -> K)).
+Definition lam_type_of_list {ls K} : (type_of_list ls -> K) -> type_of_list_cps K ls.
+Admitted.
+Fixpoint lift_type_of_list_map {A} {ls : list A} {P1 P2 : A -> Type} (F : forall a, P1 a -> P2 a) {struct ls}
+    : type_of_list (List.map P1 ls) -> type_of_list (List.map P2 ls).
+Admitted.
+
+  Module pattern.
+    Notation EvarMap_at base := (PositiveMap.t (Compilers.base.type base)).
+    Notation EvarMap := (EvarMap_at _).
+    Export Language.Compilers.pattern.
+    Module base.
+      Export Language.Compilers.pattern.base.
+
+      Section with_base.
+        Context {base : Type}.
+
+        Local Notation type := (type base).
+Fixpoint relax (t : Compilers.base.type base) : type.
+exact (match t with
+             | Compilers.base.type.type_base t => type.type_base t
+             | Compilers.base.type.prod A B => type.prod (relax A) (relax B)
+             | Compilers.base.type.list A => type.list (relax A)
+             | Compilers.base.type.option A => type.option (relax A)
+             | Compilers.base.type.unit => type.unit
+             end).
+Defined.
+
+        Definition lookup_default (p : positive) (evar_map : EvarMap) : Compilers.base.type base
+          := match PositiveMap.find p evar_map with
+             | Datatypes.Some t => t
+             | Datatypes.None => Compilers.base.type.unit
+             end.
+
+        Fixpoint subst_default (ptype : type) (evar_map : EvarMap) : Compilers.base.type base
+          := match ptype with
+             | type.var p => lookup_default p evar_map
+             | type.type_base t => Compilers.base.type.type_base t
+             | type.prod A B
+               => Compilers.base.type.prod (subst_default A evar_map) (subst_default B evar_map)
+             | type.list A => Compilers.base.type.list (subst_default A evar_map)
+             | type.option A => Compilers.base.type.option (subst_default A evar_map)
+             | type.unit => Compilers.base.type.unit
+             end.
+Fixpoint collect_vars (t : type) : PositiveSet.t.
+Admitted.
+      End with_base.
+    End base.
+
+    Module Export type.
+      Section with_base.
+        Context {base : Type}.
+
+        Local Notation type := (type base).
+Fixpoint relax (t : type.type (Compilers.base.type base)) : type.
+exact (match t with
+             | type.base t => type.base (base.relax t)
+             | type.arrow s d => type.arrow (relax s) (relax d)
+             end).
+Defined.
+
+        Fixpoint subst_default (ptype : type) (evar_map : EvarMap) : type.type (Compilers.base.type base)
+          := match ptype with
+             | type.base t => type.base (base.subst_default t evar_map)
+             | type.arrow A B => type.arrow (subst_default A evar_map) (subst_default B evar_map)
+             end.
+Fixpoint collect_vars (t : type) : PositiveSet.t.
+Admitted.
+      End with_base.
+    End type.
+
+    Module Export Raw.
+      Module Export ident.
+        Inductive kind_of_type := GallinaType (_ : Type) | BaseBaseType | BaseType.
+        Definition Type_of_kind_of_type (base : Type) (T : kind_of_type)
+          := match T with
+             | GallinaType T => T
+             | BaseBaseType => base
+             | BaseType => Compilers.base.type.type base
+             end.
+
+        Notation type_of_list_of_kind base ls
+          := (type_of_list (List.map (@Type_of_kind_of_type base) ls)).
+
+        Section with_base.
+          Context {base : Type}.
+          Local Notation ctype := (type.type (Compilers.base.type base)).
+          Context {cident : ctype -> Type}.
+          Local Notation type_of_list_of_kind ls := (type_of_list_of_kind base ls).
+
+          Record preident_infos :=
+            {
+              dep_types : list Type;
+              indep_types : list kind_of_type;
+              indep_args : type_of_list dep_types -> list Type;
+              to_type : forall d : type_of_list dep_types, type_of_list_of_kind indep_types -> Compilers.type (Compilers.base.type base);
+              to_ident : forall (d : type_of_list dep_types) (i : type_of_list_of_kind indep_types), type_of_list (indep_args d) -> cident (to_type d i)
+            }.
+
+          Record ident_infos :=
+            {
+              preinfos :> preident_infos;
+              dep_types_dec_transparent : forall x y : type_of_list (dep_types preinfos), {x = y} + {x <> y};
+              indep_args_beq : _;
+              indep_args_reflect
+              : forall x, reflect_rel (@eq (type_of_list (indep_args preinfos x))) (indep_args_beq x);
+              indep_types_beq : _;
+              indep_types_reflect
+              : reflect_rel (@eq (type_of_list_of_kind (indep_types preinfos))) indep_types_beq;
+            }.
+
+          Definition ident_args (pi : preident_infos)
+            := { t : type_of_list (dep_types pi) & type_of_list_of_kind (indep_types pi) * type_of_list (indep_args pi t) }%type.
+
+          Definition assemble_ident {pi} (args : ident_args pi)
+            := to_ident pi (projT1 args) (Datatypes.fst (projT2 args)) (Datatypes.snd (projT2 args)).
+
+          Section __.
+            Context (ident : Set)
+                    (all_idents : list ident)
+                    (ident_index : ident -> nat)
+                    (ident_index_idempotent : forall idc, List.nth_error all_idents (ident_index idc) = Some idc)
+                    (eta_ident_cps_gen
+                     : forall (T : ident -> Type)
+                              (f : forall idc, T idc),
+                        { f' : forall idc, T idc | forall idc, f' idc = f idc }).
+
+            Context (ident_infos_of : ident -> ident_infos)
+                    (split_ident_gen
+                     : forall {t} (idc : cident t),
+                        { ridc : ident & { args : ident_args (ident_infos_of ridc)
+                                         | { pf : _ = _
+                                           | idc = rew [cident] pf in assemble_ident args } } }).
+Definition prefull_types : ident -> Type.
+exact (fun idc => ident_args (ident_infos_of idc)).
+Defined.
+Definition full_types : ident -> Type.
+exact (proj1_sig (@eta_ident_cps_gen _ prefull_types)).
+Defined.
+          End __.
+        End with_base.
+      End ident.
+    End Raw.
+
+    Module Export ident.
+      Definition Type_of_kind_of_type (base : Type) (T : Raw.ident.kind_of_type)
+        := match T with
+           | Raw.ident.GallinaType T => T
+           | Raw.ident.BaseBaseType => base
+           | Raw.ident.BaseType => pattern.base.type.type base
+           end.
+
+      Notation full_type_of_list_of_kind base ls
+        := (type_of_list (List.map (Raw.ident.Type_of_kind_of_type base) ls)).
+
+      Notation type_of_list_of_kind base ls
+        := (type_of_list (List.map (Type_of_kind_of_type base) ls)).
+
+      Section with_base.
+        Context {base : Type}.
+        Local Notation ctype := (type.type (Compilers.base.type base)).
+        Local Notation type := (type base).
+        Context {cident : ctype -> Type}.
+
+        Local Notation Type_of_kind_of_type := (Type_of_kind_of_type base).
+        Local Notation full_type_of_list_of_kind ls := (full_type_of_list_of_kind base ls).
+        Local Notation type_of_list_of_kind ls := (type_of_list_of_kind base ls).
+Definition relax_kind_of_type {T} : Raw.ident.Type_of_kind_of_type base T -> Type_of_kind_of_type T.
+admit.
+Defined.
+        Definition subst_default_kind_of_type (evm : EvarMap) {T} : Type_of_kind_of_type T -> Raw.ident.Type_of_kind_of_type base T
+          := match T with
+             | Raw.ident.GallinaType _
+             | Raw.ident.BaseBaseType
+               => fun x => x
+             | Raw.ident.BaseType => fun t => pattern.base.subst_default t evm
+             end.
+
+        Section __.
+          Context (raw_ident : Set)
+                  (all_raw_idents : list raw_ident)
+                  (raw_ident_index : raw_ident -> nat)
+                  (raw_ident_index_idempotent : forall idc, List.nth_error all_raw_idents (raw_ident_index idc) = Some idc)
+                  (eta_raw_ident_cps_gen
+                   : forall (T : raw_ident -> Type)
+                            (f : forall idc, T idc),
+                      { f' : forall idc, T idc | forall idc, f' idc = f idc }).
+          Context (raw_ident_infos_of : raw_ident -> Raw.ident.ident_infos)
+                  (split_raw_ident_gen
+                   : forall t (idc : cident t),
+                      { ridc : raw_ident
+                               & { args : Raw.ident.ident_args (preinfos (raw_ident_infos_of ridc))
+                                 | { pf : _ = _
+                                   | idc = rew [cident] pf in Raw.ident.assemble_ident args } } }).
+          Context (ident : type -> Type)
+                  (all_idents : list { T : Type & T })
+                  (eta_ident_cps_gen
+                   : forall (T : forall t, ident t -> Type)
+                            (f : forall t idc, T t idc),
+                      { f' : forall t idc, T t idc | forall t idc, f' t idc = f t idc })
+                  (eta_ident_cps_gen_expand_literal
+                   : forall (T : forall t, ident t -> Type)
+                            (f : forall t idc, T t idc),
+                      { f' : forall t idc, T t idc | forall t idc, f' t idc = f t idc }).
+
+          Context (split_types
+                   : forall t (idc : ident t), { ridc : raw_ident & type_of_list (dep_types (preinfos (raw_ident_infos_of ridc))) * type_of_list_of_kind (indep_types (preinfos (raw_ident_infos_of ridc))) }%type)
+                  (add_types_from_raw_sig
+                   : forall (ridc : raw_ident)
+                            (dt : type_of_list (dep_types (preinfos (raw_ident_infos_of ridc))))
+                            (idt : type_of_list_of_kind (indep_types (preinfos (raw_ident_infos_of ridc)))),
+                      { t : _ & { idc : ident t | @split_types _ idc = existT _ ridc (dt, idt) } }).
+
+          Definition split_types_subst_default : forall {t} (idc : ident t) (evm : EvarMap), { ridc : raw_ident & type_of_list (dep_types (preinfos (raw_ident_infos_of ridc))) * full_type_of_list_of_kind (indep_types (preinfos (raw_ident_infos_of ridc))) }%type
+            := fun {t} idc evm
+               => let res := @split_types t idc in
+                  existT _ (projT1 res) (Datatypes.fst (projT2 res),
+                                         lift_type_of_list_map (@subst_default_kind_of_type evm) (Datatypes.snd (projT2 res))).
+Definition prearg_types : forall {t} (idc : ident t), list Type.
+exact ((fun {t} idc
+                => let st := @split_types t idc in
+                   let pi := preinfos (raw_ident_infos_of (projT1 st)) in
+                   indep_args pi (Datatypes.fst (projT2 st)))).
+Defined.
+Definition arg_types : forall {t} (idc : ident t), list Type.
+exact (proj1_sig (@eta_ident_cps_gen _ (@prearg_types))).
+Defined.
+Definition of_typed_ident : forall {t} (idc : cident t), ident (type.relax t).
+Admitted.
+        End __.
+      End with_base.
+
+      Module Export GoalType.
+
+        Class package {base : Type} {ident : type.type (Compilers.base.type base) -> Type} :=
+          {
+            all_base : list base;
+            all_idents : list { T : Type & T };
+            ident_index : forall t, ident t -> nat;
+            eta_ident_cps_gen
+            : forall {T : forall t, ident t -> Type}
+                     (f : forall t idc, T t idc),
+                { f' : forall t idc, T t idc | forall t idc, f' t idc = f t idc };
+            eta_ident_cps_gen_expand_literal
+            : forall {T : forall t, ident t -> Type}
+                     (f : forall t idc, T t idc),
+                { f' : forall t idc, T t idc | forall t idc, f' t idc = f t idc };
+            eta_ident_cps
+            : forall (T : _ -> Type) t (idc : ident t)
+                     (f : forall t', ident t' -> T t'),
+                T t;
+            simple_idents : list { t : _ & ident t };
+
+            raw_ident : Set;
+            all_raw_idents : list raw_ident;
+            raw_ident_index : raw_ident -> nat;
+            raw_ident_index_idempotent : forall idc, List.nth_error all_raw_idents (raw_ident_index idc) = Some idc;
+            eta_raw_ident_cps_gen
+            : forall {T : raw_ident -> Type}
+                     (f : forall idc, T idc),
+                { f' : forall idc, T idc | forall idc, f' idc = f idc };
+            raw_ident_infos_of : raw_ident -> Raw.ident.ident_infos;
+            split_raw_ident_gen
+            : forall {t} (idc : ident t),
+                { ridc : raw_ident
+                         & { args : Raw.ident.ident_args (preinfos (raw_ident_infos_of ridc))
+                           | { pf : _ = _
+                             | idc = rew [ident] pf in Raw.ident.assemble_ident args } } };
+            invert_bind_args : forall {t} (idc : ident t) (pidc : raw_ident), Datatypes.option (@Raw.ident.full_types base ident raw_ident (@eta_raw_ident_cps_gen) raw_ident_infos_of pidc);
+            invert_bind_args_unknown : forall {t} (idc : ident t) (pidc : raw_ident), Datatypes.option (@Raw.ident.full_types base ident raw_ident (@eta_raw_ident_cps_gen) raw_ident_infos_of pidc);
+
+            pattern_ident : type base -> Type;
+            all_pattern_idents : list { T : Type & T };
+            eta_pattern_ident_cps_gen
+            : forall (T : forall t, pattern_ident t -> Type)
+                     (f : forall t idc, T t idc),
+                { f' : forall t idc, T t idc | forall t idc, f' t idc = f t idc };
+            eta_pattern_ident_cps_gen_expand_literal
+            : forall (T : forall t, pattern_ident t -> Type)
+                     (f : forall t idc, T t idc),
+                { f' : forall t idc, T t idc | forall t idc, f' t idc = f t idc };
+
+            split_types
+            : forall t (idc : pattern_ident t), { ridc : raw_ident & type_of_list (dep_types (preinfos (raw_ident_infos_of ridc))) * ident.type_of_list_of_kind base (indep_types (preinfos (raw_ident_infos_of ridc))) }%type;
+            add_types_from_raw_sig
+            : forall (ridc : raw_ident)
+                     (dt : type_of_list (dep_types (preinfos (raw_ident_infos_of ridc))))
+                     (idt : ident.type_of_list_of_kind base (indep_types (preinfos (raw_ident_infos_of ridc)))),
+                { t : _ & { idc : pattern_ident t | @split_types _ idc = existT _ ridc (dt, idt) } };
+            to_type_split_types_subst_default_eq
+            : forall t idc evm,
+                Raw.ident.to_type
+                  (preinfos (raw_ident_infos_of (projT1 (@ident.split_types_subst_default base ident raw_ident raw_ident_infos_of pattern_ident split_types t idc evm))))
+                  (Datatypes.fst (projT2 (@ident.split_types_subst_default base ident raw_ident raw_ident_infos_of pattern_ident split_types t idc evm)))
+                  (Datatypes.snd (projT2 (@ident.split_types_subst_default base ident raw_ident raw_ident_infos_of pattern_ident split_types t idc evm)))
+                = type.subst_default t evm;
+            projT1_add_types_from_raw_sig_eq
+            : forall t idc,
+                projT1
+                  (add_types_from_raw_sig
+                     (projT1 (@split_raw_ident_gen t idc))
+                     (projT1 (proj1_sig (projT2 (@split_raw_ident_gen t idc))))
+                     (lift_type_of_list_map
+                        (@ident.relax_kind_of_type base)
+                        (Datatypes.fst (projT2 (proj1_sig (projT2 (@split_raw_ident_gen t idc)))))))
+                = type.relax t;
+            arg_types_unfolded : forall t (idc : pattern_ident t), list Type;
+            to_typed_unfolded : forall t (idc : pattern_ident t) (evm : EvarMap), type_of_list (@arg_types_unfolded _ idc) -> ident (type.subst_default t evm);
+            type_of_list_arg_types_beq_unfolded : forall t idc, type_of_list (@arg_types_unfolded t idc) -> type_of_list (@arg_types_unfolded t idc) -> bool;
+            of_typed_ident_unfolded : forall t (idc : ident t), pattern_ident (type.relax t);
+            arg_types_of_typed_ident_unfolded : forall t (idc : ident t), type_of_list (arg_types_unfolded _ (of_typed_ident_unfolded _ idc));
+            unify : forall {t t'} (pidc : pattern_ident t) (idc : ident t')  , Datatypes.option (type_of_list (@ident.arg_types base ident raw_ident raw_ident_infos_of pattern_ident eta_pattern_ident_cps_gen split_types t pidc));
+            unify_unknown : forall {t t'} (pidc : pattern_ident t) (idc : ident t')  , Datatypes.option (type_of_list (@ident.arg_types base ident raw_ident raw_ident_infos_of pattern_ident eta_pattern_ident_cps_gen split_types t pidc))
+          }.
+
+        Notation arg_types_of p := (@ident.arg_types _ _ (@raw_ident _ _ p) (@raw_ident_infos_of _ _ p) (@pattern_ident _ _ p) (@eta_pattern_ident_cps_gen _ _ p) (@split_types _ _ p)).
+        Notation of_typed_ident_of p := (@ident.of_typed_ident _ _ (@eta_ident_cps_gen _ _ p) (@raw_ident _ _ p) (@raw_ident_infos_of _ _ p) (@split_raw_ident_gen _ _ p) (@pattern_ident _ _ p) (@split_types _ _ p) (@add_types_from_raw_sig _ _ p) (@projT1_add_types_from_raw_sig_eq _ _ p)).
+        Notation arg_types := (@arg_types_of _).
+      End GoalType.
+    End ident.
+  End pattern.
+
+  Module Export SubstVarLike.
+    Section with_ident.
+      Context {base_type : Type}.
+      Local Notation type := (type.type base_type).
+      Context {ident : type -> Type}.
+      Local Notation expr := (@expr.expr base_type ident).
+      Section with_var.
+        Context {var : type -> Type}.
+        Section with_ident_like.
+          Context (ident_is_good : forall t, ident t -> bool).
+Fixpoint is_recursively_var_or_ident {t} (e : @expr var t) : bool.
+Admitted.
+        End with_ident_like.
+      End with_var.
+    End with_ident.
+
+  Module Export UnderLets.
+    Section with_var.
+      Context {base_type : Type}.
+      Local Notation type := (type base_type).
+      Context {ident : type -> Type}
+              {var : type -> Type}.
+      Local Notation expr := (@expr base_type ident var).
+
+      Inductive UnderLets {T : Type} :=
+      | Base (v : T)
+      | UnderLet {A} (x : expr A) (f : var A -> UnderLets).
+
+      Fixpoint splice {A B} (x : @UnderLets A) (e : A -> @UnderLets B) : @UnderLets B
+        := match x with
+           | Base v => e v
+           | UnderLet A x f => UnderLet x (fun v => @splice _ _ (f v) e)
+           end.
+Fixpoint to_expr {t} (x : @UnderLets (expr t)) : expr t.
+Admitted.
+Fixpoint of_expr {t} (x : expr t) : @UnderLets (expr t).
+Admitted.
+    End with_var.
+    Module Export Notations.
+      Global Arguments UnderLets : clear implicits.
+      Delimit Scope under_lets_scope with under_lets.
+      Bind Scope under_lets_scope with UnderLets.UnderLets.
+      Notation "x <-- y ; f" := (UnderLets.splice y (fun x => f%under_lets)) : under_lets_scope.
+    End Notations.
+
+    Section with_var2.
+      Context {base_type : Type}.
+      Local Notation type := (type base_type).
+      Context {ident1 var1 ident2 var2 : type -> Type}.
+      Section map.
+        Context (f : forall t, @expr base_type ident1 var1 t -> @expr base_type ident2 var2 t)
+                (f' : forall t, var2 t -> var1 t)
+                {T : Type}.
+Fixpoint map (x : @UnderLets base_type ident1 var1 T) : @UnderLets base_type ident2 var2 T.
+Admitted.
+      End map.
+
+      Section flat_map.
+        Context (f : forall t, @expr base_type ident1 var1 t -> @UnderLets base_type ident2 var2 (@expr base_type ident2 var2 t))
+                (f' : forall t, var2 t -> var1 t)
+                {T : Type}.
+Fixpoint flat_map (x : @UnderLets base_type ident1 var1 T) : @UnderLets base_type ident2 var2 T.
+Admitted.
+      End flat_map.
+    End with_var2.
+
+  Notation EvarMap := Compilers.pattern.EvarMap.
+  Module pattern.
+    Export IdentifiersLibrary.Compilers.pattern.
+
+    Module Export base.
+      Import IdentifiersLibrary.Compilers.pattern.base.
+      Section with_base.
+        Context {base : Type}
+                (base_beq : base -> base -> bool).
+Fixpoint subst_default_relax P {t evm} : P t -> P (@subst_default base (relax t) evm).
+admit.
+Defined.
+Fixpoint unsubst_default_relax P {t evm} : P (@subst_default base (relax t) evm) -> P t.
+admit.
+Defined.
+      End with_base.
+    End base.
+
+    Module Export type.
+      Section with_base.
+        Context {base : Type}
+                (base_beq : base -> base -> bool).
+
+        Fixpoint subst_default_relax P {t evm} : P t -> P (type.subst_default (type.relax t) evm)
+          := match t return P t -> P (type.subst_default (type.relax t) evm) with
+             | type.base t => base.subst_default_relax (base:=base) (fun t => P (type.base t))
+             | type.arrow A B
+               => fun v
+                  => @subst_default_relax
+                       (fun A' => P (type.arrow A' _)) A evm
+                       (@subst_default_relax
+                          (fun B' => P (type.arrow _ B')) B evm
+                          v)
+             end.
+
+        Fixpoint unsubst_default_relax P {t evm} : P (type.subst_default (type.relax t) evm) -> P t
+          := match t return P (type.subst_default (type.relax t) evm) -> P t with
+             | type.base t => base.unsubst_default_relax (base:=base) (fun t => P (type.base t))
+             | type.arrow A B
+               => fun v
+                  => @unsubst_default_relax
+                       (fun A' => P (type.arrow A' _)) A evm
+                       (@unsubst_default_relax
+                          (fun B' => P (type.arrow _ B')) B evm
+                          v)
+             end.
+
+        Local Notation forall_vars_body K LS EVM0
+          := (fold_right
+                (fun i k evm => forall t : Compilers.base.type base, k (PositiveMap.add i t evm))
+                K
+                LS
+                EVM0).
+
+        Definition forall_vars (p : PositiveSet.t) (k : EvarMap -> Type)
+          := forall_vars_body k (List.rev (PositiveSet.elements p)) (PositiveMap.empty _).
+Fixpoint lam_forall_vars_gen {k : EvarMap -> Type}
+                 (f : forall evm, k evm)
+                 (ls : list PositiveMap.key)
+          : forall evm0, forall_vars_body k ls evm0.
+Admitted.
+Definition lam_forall_vars {p : PositiveSet.t} {k : EvarMap -> Type}
+                   (f : forall evm, k evm)
+          : forall_vars p k.
+Admitted.
+      End with_base.
+    End type.
+
+    Inductive pattern {base} {ident : type base -> Type} : type base -> Type :=
+    | Wildcard (t : type base) : pattern t
+    | Ident {t} (idc : ident t) : pattern t
+    | App {s d} (f : pattern (s -> d)) (x : pattern s) : pattern d.
+
+    Record > anypattern {base} {ident : type base -> Type}
+      := { type_of_anypattern : type base;
+           pattern_of_anypattern :> @pattern base ident type_of_anypattern }.
+
+    Fixpoint collect_vars {base ident}
+             {t} (p : @pattern base ident t) : PositiveSet.t.
+Admitted.
+  End pattern.
+    Module Export Compile.
+      Section with_var0.
+        Context {base_type} {ident var : type.type base_type -> Type}.
+        Local Notation type := (type.type base_type).
+        Local Notation expr := (@expr.expr base_type ident var).
+        Local Notation UnderLets := (@UnderLets.UnderLets base_type ident var).
+Let type_base (t : base_type) : type.
+exact (type.base t).
+Defined.
+        Coercion type_base : base_type >-> type.
+
+        Fixpoint value' (with_lets : bool) (t : type)
+          := match t with
+             | type.base t
+               => if with_lets then UnderLets (expr t) else expr t
+             | type.arrow s d
+               => value' false s -> value' true d
+             end.
+        Definition value := value' false.
+        Definition value_with_lets := value' true.
+Definition Base_value {t} : value t -> value_with_lets t.
+Admitted.
+Fixpoint splice_under_lets_with_value {T t} (x : UnderLets T) : (T -> value_with_lets t) -> value_with_lets t.
+Admitted.
+      End with_var0.
+      Section with_var.
+        Context {base : Type}
+                {try_make_transport_base_type_cps : type.try_make_transport_cpsT base}
+                (base_beq : base -> base -> bool).
+        Local Notation base_type := (base.type base).
+        Local Notation pattern_base_type := (pattern.base.type base).
+        Context {ident var : type.type base_type -> Type}
+                (eta_ident_cps : forall (T : type.type base_type -> Type) t (idc : ident t)
+                                        (f : forall t', ident t' -> T t'),
+                    T t)
+                {pident : type.type pattern_base_type -> Type}
+                (pident_arg_types : forall t, pident t -> list Type)
+                (pident_unify pident_unify_unknown : forall t t' (idc : pident t) (idc' : ident t'), option (type_of_list (pident_arg_types t idc)))
+                {raw_pident : Type}
+                (strip_types : forall t, pident t -> raw_pident)
+                (raw_pident_beq : raw_pident -> raw_pident -> bool)
+
+                (full_types : raw_pident -> Type)
+                (invert_bind_args invert_bind_args_unknown : forall t (idc : ident t) (pidc : raw_pident), option (full_types pidc))
+                (type_of_raw_pident : forall (pidc : raw_pident), full_types pidc -> type.type base_type)
+                (raw_pident_to_typed : forall (pidc : raw_pident) (args : full_types pidc), ident (type_of_raw_pident pidc args))
+                (raw_pident_is_simple : raw_pident -> bool).
+
+        Local Notation type := (type.type base_type).
+        Local Notation expr := (@expr.expr base_type ident var).
+        Local Notation pattern := (@pattern.pattern base pident).
+        Local Notation anypattern := (@pattern.anypattern base pident).
+        Local Notation UnderLets := (@UnderLets.UnderLets base_type ident var).
+        Local Notation value' := (@value' base_type ident var).
+        Local Notation value := (@value base_type ident var).
+        Let base' {bt} (x : Compilers.base.type bt) : type.type _ := type.base x.
+        Local Coercion base' : base.type >-> type.type.
+
+        Context (reify_and_let_binds_base_cps : forall (t : base_type), expr t -> forall T, (expr t -> UnderLets T) -> UnderLets T)
+                (reflect_ident_iota : forall t (idc : ident t), option (value t)).
+        Local Notation "e <----- e' ; f" := (splice_under_lets_with_value e' (fun e => f%under_lets)) : under_lets_scope.
+
+        Fixpoint reify {with_lets} {t} : value' with_lets t -> expr t
+          := match t, with_lets return value' with_lets t -> expr t with
+             | type.base _, false => fun v => v
+             | type.base _, true => fun v => UnderLets.to_expr v
+             | type.arrow s d, _
+               => fun f
+                  => λ x , @reify _ d (f (@reflect _ s ($$x)))
+             end%expr%under_lets%cps
+        with reflect {with_lets} {t} : expr t -> value' with_lets t
+             := match t, with_lets return expr t -> value' with_lets t with
+                | type.base _, false => fun v => v
+                | type.base _, true => fun v => UnderLets.Base v
+                | type.arrow s d, _
+                  => fun f (x : value' _ _) => @reflect _ d (f @ (@reify _ s x))
+                end%expr%under_lets.
+Fixpoint reflect_expr_beta_iota {t} (e : @expr.expr base_type ident value t)
+          : UnderLets (value t).
+exact (match e in expr.expr t return UnderLets (value t) with
+             | expr.Var t v => UnderLets.Base v
+             | expr.Abs s d f => UnderLets.Base (fun x : value s => fx <----- @reflect_expr_beta_iota d (f x); Base_value fx)
+             | expr.App s (type.base d) f x
+               => f <-- @reflect_expr_beta_iota _ f;
+                    x <-- @reflect_expr_beta_iota _ x;
+                    f x
+             | expr.App s (type.arrow _ _) f x
+               => f <-- @reflect_expr_beta_iota _ f;
+                    x <-- @reflect_expr_beta_iota _ x;
+                    UnderLets.Base (f x)
+             | expr.LetIn A B x f
+               => x <-- @reflect_expr_beta_iota _ x;
+                    UnderLets.UnderLet
+                      (reify x)
+                      (fun xv => @reflect_expr_beta_iota _ (f (reflect (expr.Var xv))))
+             | expr.Ident t idc => UnderLets.Base match reflect_ident_iota t idc with
+                                                  | Some ridc => ridc
+                                                  | None => reflect (expr.Ident idc)
+                                                  end
+             end%under_lets%option).
+Defined.
+Definition reify_to_UnderLets {with_lets} {t} : value' with_lets t -> UnderLets (expr t).
+admit.
+Defined.
+
+        Definition reify_expr_beta_iota {t} (e : @expr.expr base_type ident value t)
+          : UnderLets (@expr.expr base_type ident var t)
+          := e <-- @reflect_expr_beta_iota t e; reify_to_UnderLets e.
+
+        Fixpoint unification_resultT' {var} {t} (p : pattern t) (evm : EvarMap) : Type
+          := match p return Type with
+             | pattern.Wildcard t => var (pattern.type.subst_default t evm)
+             | pattern.Ident t idc => type_of_list (pident_arg_types t idc)
+             | pattern.App s d f x
+               => @unification_resultT' var _ f evm * @unification_resultT' var _ x evm
+             end%type.
+
+        Fixpoint with_unification_resultT' {var} {t} (p : pattern t) (evm : EvarMap) (K : Type) : Type
+          := match p return Type with
+             | pattern.Wildcard t => var (pattern.type.subst_default t evm) -> K
+             | pattern.Ident t idc => type_of_list_cps K (pident_arg_types t idc)
+             | pattern.App s d f x
+               => @with_unification_resultT' var _ f evm (@with_unification_resultT' var _ x evm K)
+             end%type.
+
+        Fixpoint lam_unification_resultT' {var t p evm K} {struct p}
+          : (@unification_resultT' var t p evm -> K) -> @with_unification_resultT' var t p evm K
+          := match p return (unification_resultT' p evm -> K) -> with_unification_resultT' p evm K with
+             | pattern.Wildcard t => fun f x => f x
+             | pattern.Ident t idc => lam_type_of_list
+             | pattern.App s d f x
+               => fun (F : unification_resultT' f _ * unification_resultT' x _ -> _)
+                  => @lam_unification_resultT'
+                       _ _ f _ _
+                       (fun fv
+                        => @lam_unification_resultT'
+                             _ _ x _ _ (fun xv => F (fv, xv)))
+             end.
+
+        Definition with_unification_resultT {var t} (p : pattern t) (K : type -> Type) : Type
+          := pattern.type.forall_vars
+               (pattern.collect_vars p)
+               (fun evm => @with_unification_resultT' var t p evm (K (pattern.type.subst_default t evm))).
+Definition partial_lam_unification_resultT {var' t p K}
+          : (forall evm, @with_unification_resultT' var' t p evm (K (pattern.type.subst_default t evm))) -> @with_unification_resultT var' t p K.
+admit.
+Defined.
+
+        Local Notation expr_maybe_do_again should_do_again
+          := (@expr.expr base_type ident (if should_do_again then value else var)).
+
+        Local Notation deep_rewrite_ruleTP_gen' should_do_again with_opt under_lets t
+          := (match (expr_maybe_do_again should_do_again t) with
+              | x0 => match (if under_lets then UnderLets x0 else x0) with
+                      | x1 => if with_opt then option x1 else x1
+                      end
+              end).
+
+        Definition with_unif_rewrite_ruleTP_gen' {var t} (p : pattern t) (should_do_again : bool) (with_opt : bool) (under_lets : bool) evm
+          := @with_unification_resultT' var t p evm (deep_rewrite_ruleTP_gen' should_do_again with_opt under_lets (pattern.type.subst_default t evm)).
+
+        Definition with_unif_rewrite_ruleTP_gen {var t} (p : pattern t) (should_do_again : bool) (with_opt : bool) (under_lets : bool)
+          := @with_unification_resultT var t p (fun t => deep_rewrite_ruleTP_gen' should_do_again with_opt under_lets t).
+
+        Definition partial_lam_unif_rewrite_ruleTP_gen {var t} (p : pattern t) (should_do_again : bool) (with_opt : bool) (under_lets : bool)
+          : (forall evm, @with_unif_rewrite_ruleTP_gen' var t p should_do_again with_opt under_lets evm) -> @with_unif_rewrite_ruleTP_gen var t p should_do_again with_opt under_lets
+          := partial_lam_unification_resultT.
+
+        Record rewrite_rule_data {t} {p : pattern t} :=
+          { rew_should_do_again : bool;
+            rew_with_opt : bool;
+            rew_under_lets : bool;
+            rew_replacement : @with_unif_rewrite_ruleTP_gen value t p rew_should_do_again rew_with_opt rew_under_lets }.
+
+        Definition rewrite_ruleTP
+          := (fun p : anypattern => @rewrite_rule_data _ (pattern.pattern_of_anypattern p)).
+        Definition rewrite_ruleT := sigT rewrite_ruleTP.
+
+        End with_var.
+
+      Section full.
+        Context {base : Type}.
+        Local Notation base_type := (base.type base).
+        Local Notation type := (type.type base_type).
+        Context {ident : type -> Type}
+                {base_interp : base -> Type}
+                (ident_is_var_like : forall t, ident t -> bool).
+Let type_base (x : base) : @base.type base.
+exact (base.type.type_base x).
+Defined.
+        Let base' {bt} (x : Compilers.base.type bt) : type.type _ := type.base x.
+        Local Coercion base' : base.type >-> type.type.
+        Local Coercion type_base : base >-> base.type.
+        Context {baseTypeHasNat : base.type.BaseTypeHasNatT base}
+                {buildIdent : ident.BuildIdentT base_interp ident}
+                {buildEagerIdent : ident.BuildEagerIdentT ident}
+                {toRestrictedIdent : ident.ToRestrictedIdentT ident}
+                {toFromRestrictedIdent : ident.ToFromRestrictedIdentT ident}
+                {invertIdent : InvertIdentT base_interp ident}
+                {baseHasNatCorrect : base.BaseHasNatCorrectT base_interp}
+                {try_make_transport_base_cps : type.try_make_transport_cpsT base}.
+
+        Section with_var.
+          Context {var : type -> Type}.
+          Local Notation value := (@Compile.value base_type ident var).
+          Local Notation UnderLets := (UnderLets.UnderLets base_type ident var).
+          Local Notation base_type_nat := (match base.type.nat return base with x => x end).
+
+          Local Notation base_to_nat := (base.to_nat (BaseHasNatCorrectT:=baseHasNatCorrect)).
+          Local Notation base_of_nat := (base.of_nat (BaseHasNatCorrectT:=baseHasNatCorrect)).
+Definition reflect_ident_iota {t} (idc : ident t) : option (value t).
+exact ((ident.eager_ident_rect
+                  (fun t idc => value t)
+                  (fun   P
+                   => (fun (N_case : value base.type.unit -> _) (S_case : value base_type_nat -> value P -> _) (n : expr base_type_nat)
+                       => match invert_Literal n with
+                          | Some n => nat_rect
+                                        (fun _ => UnderLets (expr P))
+                                        (N_case (#(ident.ident_tt)))
+                                        (fun n' rec
+                                         => rec <-- rec;
+                                              S_case (#(ident.ident_Literal (t:=base_type_nat) (base_of_nat n'))) rec)
+                                        (base_to_nat n)
+                          | None => reflect (with_lets:=false) (expr.Ident (ident.ident_nat_rect (P:=P))) N_case S_case n
+                          end))
+                  (fun   P Q
+                   => (fun (N_case : value P -> _) (S_case : value base_type_nat -> (value P -> _) -> _ -> _) (n : expr base_type_nat) (v : expr P)
+                       => match invert_Literal n with
+                          | Some n => nat_rect
+                                        (fun _ => expr P -> UnderLets (expr Q))
+                                        N_case
+                                        (fun n' rec v'
+                                         => S_case (#(ident.ident_Literal (t:=base_type_nat) (base_of_nat n'))) rec v')
+                                        (base_to_nat n)
+                                        v
+                          | None => reflect (with_lets:=false) (expr.Ident (ident.ident_nat_rect_arrow (P:=P) (Q:=Q))) N_case S_case n v
+                          end))
+                  (fun   A P
+                   => (fun (N_case : value base.type.unit -> _) (C_case : value A -> _ -> value P -> _) (ls : expr (base.type.list A))
+                       => match reflect_list ls with
+                          | Some ls => list_rect
+                                         (fun _ => UnderLets (expr P))
+                                         (N_case (#(ident.ident_tt)))
+                                         (fun x xs rec
+                                          => rec <-- rec;
+                                               C_case x (reify_list xs) rec)
+                                         ls
+                          | None => reflect (with_lets:=false) (expr.Ident (ident.ident_list_rect (A:=A) (P:=P))) N_case C_case ls
+                          end))
+                  (fun   A P Q
+                   => (fun (N_case : value P -> _) (C_case : value A -> _ -> (value P -> _) -> value P -> _) (ls : expr (base.type.list A)) (v : value P)
+                       => match reflect_list ls with
+                          | Some ls => list_rect
+                                         (fun _ => expr P -> UnderLets (expr Q))
+                                         N_case
+                                         (fun x xs rec v
+                                          => C_case x (reify_list xs) rec v)
+                                         ls
+                                         v
+                          | None => reflect (with_lets:=false) (expr.Ident (ident.ident_list_rect_arrow (A:=A) (P:=P) (Q:=Q))) N_case C_case ls v
+                          end))
+                  (fun   A
+                   => (fun default (ls : expr (base.type.list A)) (n : expr base_type_nat)
+                       => match reflect_list ls, invert_Literal n with
+                          | Some ls, Some n => UnderLets.Base (nth_default default ls (base_to_nat n))
+                          | _, _ => reflect (with_lets:=false) (expr.Ident (ident.ident_List_nth_default (T:=A))) default ls n
+                          end))
+                  idc)%expr%under_lets).
+Defined.
+
+          End with_var.
+      End full.
+
+      Inductive dynlist := dynnil | dyncons {T} (x : T) (xs : dynlist).
+
+      Section with_var.
+        Context {base : Type}.
+        Local Notation base_type := (base.type base).
+        Local Notation pattern_base_type := (pattern.base.type base).
+        Local Notation type := (type.type base_type).
+        Local Notation ptype := (type.type pattern_base_type).
+        Context {ident var : type -> Type}
+                {pident : ptype -> Type}
+                (pident_arg_types : forall t, pident t -> list Type)
+                (pident_type_of_list_arg_types_beq : forall t idc, type_of_list (pident_arg_types t idc) -> type_of_list (pident_arg_types t idc) -> bool)
+                (pident_of_typed_ident : forall t, ident t -> pident (pattern.type.relax t))
+                (pident_arg_types_of_typed_ident : forall t (idc : ident t), type_of_list (pident_arg_types _ (pident_of_typed_ident t idc)))
+                (reflect_ident_iota : forall t (idc : ident t), option (@value base_type ident var t)).
+        Local Notation value := (@Compile.value base_type ident var).
+        Local Notation UnderLets := (UnderLets.UnderLets base_type ident var).
+        Local Notation reify_expr_beta_iota := (@reify_expr_beta_iota base ident var reflect_ident_iota).
+
+        Local Notation expr_maybe_do_again should_do_again
+          := (@expr.expr base_type ident (if should_do_again then value else var)).
+Definition expr_value_to_rewrite_rule_replacement (should_do_again : bool) {t} (e : @expr.expr base_type ident value t)
+          : UnderLets (expr_maybe_do_again should_do_again t).
+exact ((e <-- UnderLets.flat_map (@reify_expr_beta_iota) (fun t v => reflect (expr.Var v)) (UnderLets.of_expr e);
+                if should_do_again return UnderLets (expr_maybe_do_again should_do_again t)
+                then UnderLets.Base e
+                else reify_expr_beta_iota e)%under_lets).
+Defined.
+      End with_var.
 Module Export Ident.
 Import Ltac2.Ltac2.
 Import Ltac2.Printf.
@@ -72,30 +1511,7 @@ Ltac2 mkRel (i : int) :=
 Ltac2 mkVar (i : ident) :=
   make (Var i).
 
-Module List.
-  (* Drop once the minimum dependency has been bumpped to 8.17 *)
-Ltac2 rec for_all2_aux (on_length_mismatch : 'a list -> 'b list -> bool) f xs ys :=
-  match xs with
-  | [] => match ys with
-          | [] => true
-          | y :: ys' => on_length_mismatch xs ys
-          end
-  | x :: xs'
-    => match ys with
-       | [] => on_length_mismatch xs ys
-       | y :: ys'
-         => match f x y with
-            | true => for_all2_aux on_length_mismatch f xs' ys'
-            | false => false
-            end
-       end
-  end.
-
-(* Drop once the minimum dependency has been bumpped to 8.17 *)
-Ltac2 equal f xs ys := for_all2_aux (fun _ _ => false) f xs ys.
-End  List.
-
-Module Option.
+Module Export Option.
   Ltac2 equal (eq : 'a -> 'b -> bool) (a : 'a option) (b : 'b option) : bool
     := match a with
        | None => match b with
@@ -107,9 +1523,8 @@ Module Option.
                    | _ => false
                    end
        end.
-End Option.
 
-Module Array.
+Module Export Array.
   Import Ltac2.Array.
   Ltac2 rec for_all2_aux (p : 'a -> 'b -> bool) (a : 'a array) (b : 'b array) (pos : int) (len : int) :=
     if Int.equal len 0
@@ -117,13 +1532,6 @@ Module Array.
     else if p (get a pos) (get b pos)
          then for_all2_aux p a b (Int.add pos 1) (Int.sub len 1)
          else false.
-
-  Ltac2 for_all2 p a b :=
-    let lena := length a in
-    let lenb := length b in
-    if Int.equal lena lenb
-    then for_all2_aux p a b 0 lena
-    else Control.throw_invalid_argument "Array.for_all2".
   Ltac2 equal p a b :=
     let lena := length a in
     let lenb := length b in
@@ -132,16 +1540,13 @@ Module Array.
     else false.
 End Array.
 
-Module Projection.
-  Import Constr.Unsafe.
+Module Export Projection.
   Ltac2 equal (x : projection) (y : projection) : bool
     := let dummy := make (Rel (-1)) in
        Constr.equal (make (Proj x dummy)) (make (Proj y dummy)).
-End Projection.
 
-Module Constr.
+Module Export Constr.
   Import Ltac2.Constr.
-  Import Ltac2.Constr.Unsafe.
   Import Ltac2.Bool.
   Ltac2 rec kind_nocast_gen kind (x : constr) :=
     let k := kind x in
@@ -162,11 +1567,11 @@ Module Constr.
                    && Array.equal equal_nounivs xs ys
               | _ => false
               end
-         | Rel _ => false (* handled by Constr.equal *)
-         | Var _ => false (* handled by Constr.equal *)
-         | Meta _ => false (* handled by Constr.equal *)
-         | Uint63 _ => false (* handled by Constr.equal *)
-         | Float _ => false (* handled by Constr.equal *)
+         | Rel _ => false
+         | Var _ => false
+         | Meta _ => false
+         | Uint63 _ => false
+         | Float _ => false
          | Evar ex instx
            => match kind y with
               | Evar ey insty
@@ -178,7 +1583,7 @@ Module Constr.
               end
          | Sort sx
            => match kind y with
-              | Sort sy => true (*eq_sorts sx sy*)
+              | Sort sy => true
               | _ => false
               end
          | Prod xb fx
@@ -266,17 +1671,7 @@ Module Constr.
               | _ => false
               end
          end.
-End Constr.
-
-Import Rewriter.Language.Language.
-Import Rewriter.Util.LetIn.
-Import Rewriter.Util.ListUtil.
-Import Rewriter.Util.Option.
-Import Rewriter.Util.Prod.
-Import Rewriter.Util.NatUtil.
-Import Rewriter.Util.Bool.
 Module Export Compilers.
-  Export Language.Compilers.
   Module Export Exports.
     Ltac2 Type exn ::= [ Reification_failure (message) ].
     Ltac2 Type exn ::= [ Reification_panic (message) ].
@@ -486,7 +1881,6 @@ Module Export Compilers.
   End base.
 
   Module Export expr.
-    Import Language.Compilers.expr.
 
     Module Export var_context.
       Inductive list {base_type} {var : type base_type -> Type} :=
@@ -995,11 +2389,9 @@ Module Export Compilers.
 
 Ltac2 Notation "strategy:(" s(strategy) ")" := s.
 Module Export IdentifiersBasicGenerate.
-Import Ltac2.Bool.
 Module Export Compilers.
 
   Module Export Basic.
-    Export IdentifiersBasicLibrary.Compilers.Basic.
 
     Module Import Tactics.
 
@@ -1211,7 +2603,6 @@ Module Export Compilers.
       #[deprecated(since="8.15",note="Use Ltac2 instead.")]
       Ltac reify_ident_via_reify_package := Tactics.reify_ident_via_reify_package.
 Module Export Constr.
-Import Ltac2.Constr.
 
 Ltac2 is_sort(c: constr) :=
   match Unsafe.kind c with
@@ -1219,30 +2610,16 @@ Ltac2 is_sort(c: constr) :=
   | _ => false
   end.
 Module Export Reify.
-Import Coq.ZArith.ZArith.
-Import Coq.FSets.FMapPositive.
-Import Coq.MSets.MSetPositive.
 Import Coq.Lists.List.
-Import Rewriter.Util.OptionList.
-Import Rewriter.Util.Bool.Reflect.
-Import Rewriter.Util.Tactics.ConstrFail.
-Import Rewriter.Util.Tactics.Head.
 Local Set Default Proof Mode "Classic".
 Module Export Compilers.
-  Import invert_expr.
-  Export Rewriter.Compilers.
 
   Module Export RewriteRules.
-    Export Rewriter.Compilers.RewriteRules.
 
     Module Export Reify.
-      Export Rewriter.Compilers.RewriteRules.Reify.
-      Import Compile.
       Local Notation EvarMap_at base := (pattern.EvarMap_at base).
 
       Section with_var.
-        Local Notation type_of_list
-          := (fold_right (fun a b => prod a b) unit).
         Context {base : Type}.
         Local Notation base_type := (base.type base).
         Local Notation pattern_base_type := (pattern.base.type base).
@@ -1419,9 +2796,9 @@ Defined.
                               printf "1";
                               let ty_ctx := debug_Constr_check (mkApp 'PositiveMap.add [base_type; cur_i; rt; ty_ctx]) in
                               printf "2";
-                              let t := (*debug_Constr_check*) (mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['(ltac:(repeat match goal with H : _ |- _ => clear H end)); cur_i; ty_ctx] ]) in
+                              let t :=   (mkApp base_type_interp [mkApp '@pattern.base.lookup_default ['(ltac:(repeat match goal with H : _ |- _ => clear H end)); cur_i; ty_ctx] ]) in
                               printf "3";
-                              let p := (*debug_Constr_check*) (Constr.Unsafe.substnl [t] 0 p) in
+                              let p :=   (Constr.Unsafe.substnl [t] 0 p) in
                               printf "3";
                               let cur_i := Std.eval_vm None (mkApp 'Pos.succ [cur_i]) in
                               printf "4";
@@ -1475,7 +2852,6 @@ Defined.
                    let __ := constr:(ltac:(repeat match goal with H : _ |- _ => clear H end; exact val)) in
                    idtac)
         end.
-
 
       Ltac equation_to_parts' lem side_conditions :=
         let __ := match goal with _ => idtac "equation_to_parts'" lem side_conditions end in
@@ -1947,7 +3323,6 @@ Defined.
         let h := lazymatch v with fun A B => ?f _ _ => f end in
         h.
       Section make_rewrite_rules.
-        Import Compile.
         Section expanded.
           Context {base : Type}.
           Local Notation base_type := (base.type base).
@@ -5159,45 +6534,7 @@ Admitted.
 Definition arg_types_unfolded0 :
     forall (t : type.type (pattern.base.type.type base))
       (_ : pattern_ident t), list Type.
-exact (fun (t : type.type (pattern.base.type.type base)) (idc : pattern_ident t)
-    =>
-    match idc in (pattern_ident t0) return (list Type) with
-    | pattern_ident_false0 => @nil Type
-    | pattern_ident_flat_map _ _ => @nil Type
-    | pattern_ident_app _ => @nil Type
-    | pattern_ident_map _ _ => @nil Type
-    | pattern_ident_snd _ _ => @nil Type
-    | pattern_ident_fst _ _ => @nil Type
-    | pattern_ident_Z0 => @nil Type
-    | pattern_ident_add => @nil Type
-    | pattern_ident_literal0 t0 =>
-        @cons Type
-          match t0 return Type with
-          | base_Z => Z
-          | base_nat0 => nat
-          | base_bool0 => bool
-          end (@nil Type)
-    | pattern_ident_nil0 _ => @nil Type
-    | pattern_ident_cons0 _ => @nil Type
-    | pattern_ident_Some0 _ => @nil Type
-    | pattern_ident_None0 _ => @nil Type
-    | pattern_ident_pair0 _ _ => @nil Type
-    | pattern_ident_tt0 => @nil Type
-    | pattern_ident_prod_rect_nodep0 _ _ _ => @nil Type
-    | pattern_ident_bool_rect0 _ => @nil Type
-    | pattern_ident_list_case0 _ _ => @nil Type
-    | pattern_ident_option_rect0 _ _ => @nil Type
-    | pattern_ident_nat_rect0 _ => @nil Type
-    | pattern_ident_eager_nat_rect0 _ => @nil Type
-    | pattern_ident_nat_rect_arrow0 _ _ => @nil Type
-    | pattern_ident_eager_nat_rect_arrow0 _ _ => @nil Type
-    | pattern_ident_list_rect0 _ _ => @nil Type
-    | pattern_ident_eager_list_rect0 _ _ => @nil Type
-    | pattern_ident_list_rect_arrow0 _ _ _ => @nil Type
-    | pattern_ident_eager_list_rect_arrow0 _ _ _ => @nil Type
-    | pattern_ident_List_nth_default0 _ => @nil Type
-    | pattern_ident_eager_List_nth_default0 _ => @nil Type
-    end).
+admit.
 Defined.
 Definition type_of_list_arg_types_beq_unfolded0 :
     forall (t : type.type (pattern.base.type.type base))
@@ -5220,108 +6557,7 @@ Admitted.
 Definition of_typed_ident_unfolded0 :
     forall (t : type.type (base.type.type base)) (_ : ident t),
     pattern_ident (@IdentifiersLibrary.Compilers.pattern.type.relax base t).
-exact (fun (t : type.type (base.type.type base)) (idc : ident t) =>
-    match
-      idc in (ident t0)
-      return
-        (pattern_ident
-           (@IdentifiersLibrary.Compilers.pattern.type.relax base t0))
-    with
-    | ident_false0 => pattern_ident_false0
-    | ident_flat_map t0 t1 =>
-        pattern_ident_flat_map
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_app t0 =>
-        pattern_ident_app
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_map t0 t1 =>
-        pattern_ident_map
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_snd t0 t1 =>
-        pattern_ident_snd
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_fst t0 t1 =>
-        pattern_ident_fst
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_Z0 => pattern_ident_Z0
-    | ident_add => pattern_ident_add
-    | ident_literal0 t0 _ => pattern_ident_literal0 t0
-    | ident_nil0 t0 =>
-        pattern_ident_nil0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_cons0 t0 =>
-        pattern_ident_cons0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_Some0 t0 =>
-        pattern_ident_Some0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_None0 t0 =>
-        pattern_ident_None0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_pair0 t0 t1 =>
-        pattern_ident_pair0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_tt0 => pattern_ident_tt0
-    | ident_prod_rect_nodep0 t0 t1 t2 =>
-        pattern_ident_prod_rect_nodep0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t2)
-    | ident_bool_rect0 t0 =>
-        pattern_ident_bool_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_list_case0 t0 t1 =>
-        pattern_ident_list_case0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_option_rect0 t0 t1 =>
-        pattern_ident_option_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_nat_rect0 t0 =>
-        pattern_ident_nat_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_eager_nat_rect0 t0 =>
-        pattern_ident_eager_nat_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_nat_rect_arrow0 t0 t1 =>
-        pattern_ident_nat_rect_arrow0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_eager_nat_rect_arrow0 t0 t1 =>
-        pattern_ident_eager_nat_rect_arrow0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_list_rect0 t0 t1 =>
-        pattern_ident_list_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_eager_list_rect0 t0 t1 =>
-        pattern_ident_eager_list_rect0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-    | ident_list_rect_arrow0 t0 t1 t2 =>
-        pattern_ident_list_rect_arrow0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t2)
-    | ident_eager_list_rect_arrow0 t0 t1 t2 =>
-        pattern_ident_eager_list_rect_arrow0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t1)
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t2)
-    | ident_List_nth_default0 t0 =>
-        pattern_ident_List_nth_default0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    | ident_eager_List_nth_default0 t0 =>
-        pattern_ident_eager_List_nth_default0
-          (@IdentifiersLibrary.Compilers.pattern.base.relax base t0)
-    end).
+admit.
 Defined.
 Definition arg_types_of_typed_ident_unfolded0 :
     forall (t : type.type (base.type.type base)) (idc : ident t),
@@ -5520,15 +6756,7 @@ Notation specs   :=
                                       (@nil (prod bool Prop))))))))))))).
 Goal True.
   Unset Ltac Backtrace.
-  (*Set Ltac Backtrace.
-  Set Ltac2 Backtrace.
-  Set Debug "backtrace".
-  Ltac2 Set Pre.reify_debug_level := 100.
-  Set Printing Implicit.
-  Set Printing Existing Instances.
-  Check @pattern.base.lookup_default.
-  Print base.type.type.
-    *)
+
     let reify_package := constr:(reify_package) in
     let exprInfo := constr:(exprInfo) in
     let exprExtraInfo := constr:(exprExtraInfo) in
@@ -5547,433 +6775,4 @@ Goal True.
    let v := Reify.Compilers.RewriteRules.Make.Reify reify_base reify_ident exprInfo
                                                     exprExtraInfo pkg ident_is_var_like include_interp specs in
    idtac v.
-    (* Error:
-Backtrace:
 
-In nested Ltac calls to "Reify", "Reify_list",
-"(fun var : type (base.type base) -> Type => _)" (with
-try_make_transport_base_cps:=try_make_base_transport_cps0,
-reflect_ident_iota:=@Compile.reflect_ident_iota base ident base_interp0 baseHasNat0
-                      buildIdent0 buildEagerIdent0 toRestrictedIdent0
-                      toFromRestrictedIdent0 invertIdent0 baseHasNatCorrect0
-                      try_make_base_transport_cps0,
-pident_type_of_list_arg_types_beq:=type_of_list_arg_types_beq_unfolded0,
-pident_of_typed_ident:=of_typed_ident_unfolded0,
-pident_arg_types_of_typed_ident:=arg_types_of_typed_ident_unfolded0,
-pident_arg_types:=arg_types_unfolded0, pident:=pattern_ident,
-lems:=(include_interp, forall n : Z, (n + 0)%Z = n)
-      :: (include_interp, forall (A B : Type) (a : A) (b : B), @fst A B (a, b) = a)
-         :: (include_interp,
-            forall (A B : Type) (a : A) (b : B), @snd A B (a, b) = b)
-            :: (include_interp,
-               forall (A B : Type) (f : A -> B) (ls : Datatypes.list A),
-               @map A B f ls =
-               @ident.eagerly
-                 (forall (A0 : Type) (P : Datatypes.list A0 -> Type),
-                  P (@Datatypes.nil A0) ->
-                  (forall (a : A0) (l : Datatypes.list A0), P l -> P (a :: l)) ->
-                  forall l : Datatypes.list A0, P l) Datatypes.list_rect A
-                 (fun _ : Datatypes.list A => Datatypes.list B)
-                 (@Datatypes.nil B)
-                 (fun (x : A) (_ : Datatypes.list A) (map_f_xs : Datatypes.list B)
-                  => f x :: map_f_xs) ls)
-               :: (include_interp,
-                  forall (A : Type) (xs ys : Datatypes.list A),
-                  xs ++ ys =
-                  @ident.eagerly
-                    (forall (A0 : Type) (P : Datatypes.list A0 -> Type),
-                     P (@Datatypes.nil A0) ->
-                     (forall (a : A0) (l : Datatypes.list A0), P l -> P (a :: l)) ->
-                     forall l : Datatypes.list A0, P l) Datatypes.list_rect A
-                    (fun _ : Datatypes.list A => Datatypes.list A) ys
-                    (fun (x : A) (_ app_xs_ys : Datatypes.list A) => x :: app_xs_ys)
-                    xs)
-                  :: (include_interp,
-                     forall (A P Q : Type) (N : P -> Q)
-                       (C : A -> Datatypes.list A -> (P -> Q) -> P -> Q)
-                       (ls : Datatypes.list A) (v : P),
-                     @list_rect_arrow_nodep A P Q N C ls v =
-                     @ident.eagerly
-                       (forall A0 P0 Q0 : Type,
-                        (P0 -> Q0) ->
-                        (A0 -> Datatypes.list A0 -> (P0 -> Q0) -> P0 -> Q0) ->
-                        Datatypes.list A0 -> P0 -> Q0)
-                       (@list_rect_arrow_nodep) A P Q N C ls v)
-                     :: (include_interp,
-                        forall (A P : Type) (N : unit -> P)
-                          (C : A -> Datatypes.list A -> P -> P)
-                          (ls : Datatypes.list A),
-                        @Thunked.list_rect A P N C ls =
-                        @ident.eagerly
-                          (forall A0 P0 : Type,
-                           (unit -> P0) ->
-                           (A0 -> Datatypes.list A0 -> P0 -> P0) ->
-                           Datatypes.list A0 -> P0) (@Thunked.list_rect) A P N C ls)
-                        :: (include_interp,
-                           forall (A P : Type) (N : unit -> P)
-                             (C : A -> Datatypes.list A -> P),
-                           @Thunked.list_case A P N C (@Datatypes.nil A) = N tt)
-                           :: (include_interp,
-                              forall (A P : Type) (N : unit -> P)
-                                (C : A -> Datatypes.list A -> P)
-                                (x : A) (xs : Datatypes.list A),
-                              @Thunked.list_case A P N C (x :: xs) = C x xs)
-                              :: (include_interp,
-                                 forall (A : Type) (default : A)
-                                   (ls : Datatypes.list A)
-                                   (n : nat),
-                                 @nth_default A default ls (@ident.literal nat n) =
-                                 @ident.eagerly
-                                   (forall A0 : Type,
-                                    A0 -> Datatypes.list A0 -> nat -> A0)
-                                   nth_default A default ls
-                                   (@ident.literal nat n))
-                                 :: (true,
-                                    forall (A B : Type)
-                                      (f : A -> Datatypes.list B)
-                                      (xs : Datatypes.list A),
-                                    @flat_map A B f xs =
-                                    @Datatypes.list_rect A
-                                      (fun _ : Datatypes.list A => Datatypes.list B)
-                                      (@Datatypes.nil B)
-                                      (fun (x : A) (_ : Datatypes.list A)
-                                         (flat_map_tl : Datatypes.list B) =>
-                                       f x ++ flat_map_tl) xs)
-                                    :: @Datatypes.nil (bool * Prop), ident:=ident,
-gets_inlined:=fun (var : type (base.type base) -> Type) (t : base.type base) =>
-              @SubstVarLike.is_recursively_var_or_ident
-                (base.type base) ident var ident_is_var_like
-                (@type.base (base.type base) t), base_interp_beq:=base_interp_beq0,
-base_interp:=base_interp0, base:=base), "reify_list", "reify_list_rec" (bound to
-fun lems =>
-  let reify' :=
-   reify base reify_base base_interp base_interp_beq try_make_transport_base_cps
-    ident reify_ident pident pident_arg_types pident_type_of_list_arg_types_beq
-    pident_of_typed_ident pident_arg_types_of_typed_ident reflect_ident_iota var
-    gets_inlined
-  in
-  let reify_list_rec :=
-   reify_list base reify_base base_interp base_interp_beq
-    try_make_transport_base_cps ident reify_ident pident pident_arg_types
-    pident_type_of_list_arg_types_beq pident_of_typed_ident
-    pident_arg_types_of_typed_ident reflect_ident_iota var gets_inlined
-  in
-  lazymatch eval hnf in lems with
-  | (?b, ?lem) :: ?lems =>
-      let rlem := reify' b lem in
-      let rlems := reify_list_rec lems in
-      constr:((rlem :: rlems))
-  | @Datatypes.nil _ =>
-      constr:((@Datatypes.nil
-                 (@Compile.rewrite_ruleT base ident var pident pident_arg_types)))
-  | _ =>
-      let List_map := eval cbv delta [map] in @map in
-      let lems :=
-       eval cbv beta iota in
-       (List_map _ _ (fun p : Prop => (include_interp, p)) lems)
-      in
-      reify_list_rec lems
-  end), "reify'" (bound to
-fun should_do_again lem =>
-  let base_type := constr:((base.type base)) in
-  let base_type_interp := constr:((@base.interp base base_interp)) in
-  reify_under_forall_types base_type base_type_interp lem
-   ltac:(fun ty_ctx cur_i lem =>
-           let __ := match goal with
-                     | _ => idtac "cont:" ty_ctx cur_i lem
-                     end in
-           let lem := equation_to_parts lem in
-           let __ :=
-            match goal with
-            | _ => idtac "reify_to_pattern_and_replacement_in_context" base
-            reify_base base_interp base_interp_beq try_make_transport_base_cps
-            ident reify_ident pident pident_arg_types
-            pident_type_of_list_arg_types_beq pident_of_typed_ident
-            pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var
-            gets_inlined should_do_again "constr:(1%positive)" lem
-            "(@expr.var_context.nil (base.type base) (fun _ => positive)"
-            end
-           in
-           let res :=
-            reify_to_pattern_and_replacement_in_context base reify_base base_interp
-             base_interp_beq try_make_transport_base_cps ident reify_ident pident
-             pident_arg_types pident_type_of_list_arg_types_beq
-             pident_of_typed_ident pident_arg_types_of_typed_ident
-             reflect_ident_iota ty_ctx var gets_inlined should_do_again
-             ltac:(constr:(1%positive)) lem
-             (@var_context.nil (base.type base) (fun _ => positive))
-           in
-           let __ := match goal with
-                     | _ => idtac "reify under res:" res
-                     end in
-           res)), "reify_under_forall_types", "_" (with
-lem:=forall (A B : Type) (a : A) (b : B), @fst A B (a, b) = a,
-base_type_interp:=@base.interp base base_interp0, base_type:=
-base.type base), "f" (bound to
-fun base_type base_type_interp lem cont => <ltac2::ltac2_eval@0> F base_type
-  base_type_interp lem cont),
-"<ltac2::ltac2_eval@0> F base_type base_type_interp lem cont",
-"F" (bound to fun ty_ctx cur_i lem => let v := cont ty_ctx cur_i lem in
-                                      refine
-                                      v), "cont" (bound to
-fun ty_ctx cur_i lem =>
-  let __ := match goal with
-            | _ => idtac "cont:" ty_ctx cur_i lem
-            end in
-  let lem := equation_to_parts lem in
-  let __ :=
-   match goal with
-   | _ => idtac "reify_to_pattern_and_replacement_in_context" base reify_base
-   base_interp base_interp_beq try_make_transport_base_cps ident reify_ident pident
-   pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident
-   pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var gets_inlined
-   should_do_again "constr:(1%positive)" lem
-   "(@expr.var_context.nil (base.type base) (fun _ => positive)"
-   end
-  in
-  let res :=
-   reify_to_pattern_and_replacement_in_context base reify_base base_interp
-    base_interp_beq try_make_transport_base_cps ident reify_ident pident
-    pident_arg_types pident_type_of_list_arg_types_beq pident_of_typed_ident
-    pident_arg_types_of_typed_ident reflect_ident_iota ty_ctx var gets_inlined
-    should_do_again ltac:(constr:(1%positive)) lem
-    (@var_context.nil (base.type base) (fun _ => positive))
-  in
-  let __ := match goal with
-            | _ => idtac "reify under res:" res
-            end in
-  res), "equation_to_parts", "equation_to_parts'",
-"(fun x : T => match P with
-               | P' => _
-               end)" (with side_conditions:=@Datatypes.nil bool,
-lem:=forall
-       (a : @base.interp base base_interp0
-              (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-                 (@PositiveMap.add (base.type base) 1%positive A
-                    (PositiveMap.empty (base.type base)))))
-       (b : @base.interp base base_interp0
-              (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-                 (@PositiveMap.add (base.type base) 2%positive B
-                    (@PositiveMap.add (base.type base) 1%positive A
-                       (PositiveMap.empty (base.type base)))))),
-     @fst
-       (@base.interp base base_interp0
-          (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-             (@PositiveMap.add (base.type base) 1%positive A
-                (PositiveMap.empty (base.type base)))))
-       (@base.interp base base_interp0
-          (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-             (@PositiveMap.add (base.type base) 2%positive B
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base))))))
-       (a, b) = a,
-T:=@base.interp base base_interp0
-     (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-        (@PositiveMap.add (base.type base) 1%positive A
-           (PositiveMap.empty (base.type base)))),
-P:=forall
-     b : @base.interp base base_interp0
-           (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-              (@PositiveMap.add (base.type base) 2%positive B
-                 (@PositiveMap.add (base.type base) 1%positive A
-                    (PositiveMap.empty (base.type base))))),
-   @fst
-     (@base.interp base base_interp0
-        (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-           (@PositiveMap.add (base.type base) 1%positive A
-              (PositiveMap.empty (base.type base)))))
-     (@base.interp base base_interp0
-        (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-           (@PositiveMap.add (base.type base) 2%positive B
-              (@PositiveMap.add (base.type base) 1%positive A
-                 (PositiveMap.empty (base.type base))))))
-     (x, b) = x), "equation_to_parts'", "(fun x : T => match P with
-                                                      | P' => _
-                                                      end)" (with
-side_conditions:=@Datatypes.nil bool,
-lem:=forall
-       b : @base.interp base base_interp0
-             (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-                (@PositiveMap.add (base.type base) 2%positive B
-                   (@PositiveMap.add (base.type base) 1%positive A
-                      (PositiveMap.empty (base.type base))))),
-     @fst
-       (@base.interp base base_interp0
-          (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-             (@PositiveMap.add (base.type base) 1%positive A
-                (PositiveMap.empty (base.type base)))))
-       (@base.interp base base_interp0
-          (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-             (@PositiveMap.add (base.type base) 2%positive B
-                (@PositiveMap.add (base.type base) 1%positive A
-                   (PositiveMap.empty (base.type base))))))
-       (a, b) = a,
-T:=@base.interp base base_interp0
-     (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-        (@PositiveMap.add (base.type base) 2%positive B
-           (@PositiveMap.add (base.type base) 1%positive A
-              (PositiveMap.empty (base.type base))))),
-P:=@fst
-     (@base.interp base base_interp0
-        (@pattern.base.lookup_default ?X1197@{__:=var; __:=A} 1
-           (@PositiveMap.add (base.type base) 1%positive A
-              (PositiveMap.empty (base.type base)))))
-     (@base.interp base base_interp0
-        (@pattern.base.lookup_default ?X1201@{__:=var; __:=A; __:=B} 2
-           (@PositiveMap.add (base.type base) 2%positive B
-              (@PositiveMap.add (base.type base) 1%positive A
-                 (PositiveMap.empty (base.type base))))))
-     (a, x) = a), "check_exact", "check_exact", "check_exact",
-"check_exact", "check_exact", "check_exact", "check_exact",
-"check_exact", "check_exact", "_" (with
-val:=@pattern.base.lookup_default ?X1197@{__:=var; __:=A}) and
-"exact (uconstr)", last call failed.
-Backtrace:
-
-Ill-typed evar instance
-Raised at Exninfo.iraise in file "clib/exninfo.ml", line 79, characters 4-11
-Called from Evarsolve.check_evar_instance in file "pretyping/evarsolve.ml", line 842, characters 38-88
-Called from Evarsolve.instantiate_evar in file "pretyping/evarsolve.ml", line 1517, characters 13-61
-Called from Evarsolve.evar_define in file "pretyping/evarsolve.ml", line 1750, characters 4-50
-Called from Evarsolve.solve_simple_eqn in file "pretyping/evarsolve.ml", line 1823, characters 14-79
-Called from Evarconv.evar_conv_x in file "pretyping/evarconv.ml", line 578, characters 19-125
-Called from Evarconv.unify_leq_delay in file "pretyping/evarconv.ml", line 1817, characters 8-45
-Called from Coercion.inh_conv_coerce_to_fail in file "pretyping/coercion.ml", line 622, characters 7-44
-Called from Coercion.inh_conv_coerce_to_gen in file "pretyping/coercion.ml", line 658, characters 33-111
-Called from Pretyping.Default.pretype_var in file "pretyping/pretyping.ml", line 627, characters 21-96
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1373, characters 21-85
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.type_uconstr in file "plugins/ltac/tacinterp.ml", line 1093, characters 2-57
-Called from Ltac_plugin__Internals.exact.(fun) in file "plugins/ltac/internals.ml", line 377, characters 17-85
-Called from Proofview.Goal.enter.f in file "engine/proofview.ml", line 1120, characters 40-46
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Cases.build_leaf in file "pretyping/cases.ml", line 1298, characters 17-79
-Called from Cases.compile.shift_problem in file "pretyping/cases.ml", line 1503, characters 25-41
-Called from Cases.compile_cases.compile_for_one_predicate in file "pretyping/cases.ml", line 2770, characters 25-55
-Called from Cases.list_try_compile.aux in file "pretyping/cases.ml", line 82, characters 10-13
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Cases.compile_cases in file "pretyping/cases.ml", line 2779, characters 23-71
-Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Cases.build_leaf in file "pretyping/cases.ml", line 1298, characters 17-79
-Called from Cases.compile.shift_problem in file "pretyping/cases.ml", line 1503, characters 25-41
-Called from Cases.compile_cases.compile_for_one_predicate in file "pretyping/cases.ml", line 2770, characters 25-55
-Called from Cases.list_try_compile.aux in file "pretyping/cases.ml", line 82, characters 10-13
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Cases.compile_cases in file "pretyping/cases.ml", line 2779, characters 23-71
-Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 524, characters 8-30
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.refine_by_tactic in file "proofs/proof.ml", line 528, characters 6-30
-Called from Ltac_plugin__Tacinterp.eval in file "plugins/ltac/tacinterp.ml", line 2204, characters 21-94
-Called from Pretyping.Default.pretype_hole in file "pretyping/pretyping.ml", line 661, characters 21-78
-Called from Pretyping.Default.pretype_lambda in file "pretyping/pretyping.ml", line 958, characters 20-87
-Called from Pretyping.pretype in file "pretyping/pretyping.ml" (inlined), line 1352, characters 2-81
-Called from Pretyping.ise_pretype_gen in file "pretyping/pretyping.ml", line 1370, characters 21-79
-Called from Pretyping.understand_ltac in file "pretyping/pretyping.ml" (inlined), line 1422, characters 22-65
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 43-86
-Called from Ltac_plugin__Tacinterp.catch_error_with_trace_loc in file "plugins/ltac/tacinterp.ml", line 192, characters 6-9
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.interp_gen in file "plugins/ltac/tacinterp.ml", line 610, characters 6-91
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Ltac_plugin__Tacinterp.lifts.(fun) in file "plugins/ltac/tacinterp.ml", line 2114, characters 19-36
-Called from Proofview.V82.wrap_exceptions in file "engine/proofview.ml", line 1274, characters 8-12
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Proof.run_tactic in file "proofs/proof.ml", line 381, characters 4-49
-Called from Proof.solve in file "proofs/proof.ml", line 500, characters 31-52
-Called from ComTactic.solve_core.(fun) in file "vernac/comTactic.ml", line 46, characters 23-59
-Called from Declare.Proof.map_fold_endline in file "vernac/declare.ml", line 1457, characters 20-33
-Called from ComTactic.solve_core in file "vernac/comTactic.ml", line 43, characters 23-442
-Called from Vernacextend.vtmodifyproof.(fun) in file "vernac/vernacextend.ml", line 163, characters 32-47
-Called from Vernacinterp.interp_typed_vernac in file "vernac/vernacinterp.ml", line 20, characters 20-113
-Called from Vernacinterp.interp_control.(fun) in file "vernac/vernacinterp.ml", line 203, characters 24-69
-Called from Flags.with_modified_ref in file "lib/flags.ml", line 17, characters 14-17
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Vernacinterp.interp_gen.(fun) in file "vernac/vernacinterp.ml", line 253, characters 18-43
-Called from Vernacinterp.interp_gen in file "vernac/vernacinterp.ml", line 251, characters 6-279
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Stm.Reach.known_state.reach.(fun) in file "stm/stm.ml", line 2169, characters 20-47
-Called from Stm.Reach.known_state.resilient_tactic in file "stm/stm.ml", line 2111, characters 10-14
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Stm.State.define in file "stm/stm.ml", line 964, characters 6-10
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Stm.Reach.known_state.reach in file "stm/stm.ml", line 2320, characters 4-105
-Called from Stm.observe in file "stm/stm.ml", line 2421, characters 4-60
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Vernac.interp_vernac in file "toplevel/vernac.ml", line 68, characters 31-52
-Re-raised at Exninfo.iraise in file "clib/exninfo.ml", line 81, characters 4-38
-Called from Vernac.process_expr in file "toplevel/vernac.ml" (inlined), line 123, characters 2-60
-Called from Coqloop.process_toplevel_command in file "toplevel/coqloop.ml", line 415, characters 17-62
-Called from Coqloop.read_and_execute_base in file "toplevel/coqloop.ml", line 452, characters 4-39
-Called from Coqloop.read_and_execute in file "toplevel/coqloop.ml", line 458, characters 6-34
-
-*)
