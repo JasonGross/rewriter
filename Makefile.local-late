@@ -17,4 +17,8 @@ OTHERFLAGS += -profile-ltac
 endif
 
 # Kludge around COQBUG(https://github.com/coq/coq/issues/16591)
+ifneq (,$(filter .v815 .v816 .v817 .v818 .v819 .v820 .v821 .v90 .v91 .v92,$(EXPECTED_EXT)))
 FINDLIBPKGS += -package coq-core.plugins.ltac2
+else
+FINDLIBPKGS += -package rocq-runtime.plugins.ltac2
+endif
