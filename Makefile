@@ -51,6 +51,14 @@ endif
 _CoqProject: _CoqProject.in
 	sed 's?@META@?$(META_FILE_FRAGMENT)?g' $< > $@
 
+# The META file must exist before we run coq_makefile (it is referenced
+# in _CoqProject), so the rule to make it from its template lives here
+# rather than in Makefile.local-late
+ifneq (,$(META_FILE_FRAGMENT))
+$(META_FILE_FRAGMENT) : % : %.in $(COQ_VERSION_FILE)
+	sed 's?@ROCQ_RUNTIME_PACKAGE@?$(ROCQ_RUNTIME_PACKAGE)?g' $< > $@
+endif
+
 # This target is used to update the _CoqProject file.
 # But it only works if we have git
 ifneq (,$(wildcard .git/))
@@ -79,7 +87,7 @@ EXTRA_SED_FOR_DEPS:=| sed s'/-include $$(ALLDFILES)/include $$(ALLDFILES)/g'
 endif
 
 # We must work around COQBUG(https://github.com/coq/coq/issues/10907) and fix the conf target
-Makefile.coq Makefile-old.conf: Makefile _CoqProject $(COQ_VERSION_FILE)
+Makefile.coq Makefile-old.conf: Makefile _CoqProject $(COQ_VERSION_FILE) $(META_FILE_FRAGMENT)
 	$(SHOW)'COQ_MAKEFILE -f _CoqProject > Makefile.coq'
 	$(HIDE)(($(COQBIN)coq_makefile -f _CoqProject -o Makefile-old && cat Makefile-old | sed s'/Makefile-old.conf:/Makefile-old-old.conf:/g' | sed 's/Makefile-old.local/Makefile.local/g; s/^-\?include Makefile.local-late$$//g' $(EXTRA_SED_FOR_DEPS)); echo; echo 'include Makefile.local-late') > Makefile.coq && rm Makefile-old
 

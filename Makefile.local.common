@@ -83,6 +83,16 @@ endif
 endif
 endif
 
+# The findlib package containing the core plugins (ltac, ltac2, etc) is
+# coq-core in Coq 8.x; from Rocq 9.0 on it is rocq-runtime, and the
+# coq-core compatibility aliases were removed in
+# https://github.com/rocq-prover/rocq/pull/21955
+ifneq (,$(filter 8.%,$(COQ_VERSION)))
+ROCQ_RUNTIME_PACKAGE := coq-core
+else
+ROCQ_RUNTIME_PACKAGE := rocq-runtime
+endif
+
 COMPATIBILITY_FILES := \
 	src/Rewriter/Util/plugins/definition_by_tactic.ml \
 	src/Rewriter/Util/plugins/definition_by_tactic.mli \

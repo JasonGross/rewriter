@@ -9,7 +9,7 @@ $(COMPATIBILITY_FILES) : % : %$(EXPECTED_EXT) $(COQ_VERSION_FILE)
 	$(HIDE)cp $< $@
 
 # ensure that the ml compat files exist before we call coqdep on the corresponding .v files
-$(ALLDFILES): $(COMPATIBILITY_FILES) $(COQ_VERSION_FILE) _CoqProject
+$(ALLDFILES): $(COMPATIBILITY_FILES) $(META_FILE_FRAGMENT) $(COQ_VERSION_FILE) _CoqProject
 
 OTHERFLAGS += -w -notation-overridden
 ifneq ($(PROFILE),)
@@ -17,4 +17,4 @@ OTHERFLAGS += -profile-ltac
 endif
 
 # Kludge around COQBUG(https://github.com/coq/coq/issues/16591)
-FINDLIBPKGS += -package coq-core.plugins.ltac2
+FINDLIBPKGS += -package $(ROCQ_RUNTIME_PACKAGE).plugins.ltac2

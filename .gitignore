@@ -120,6 +120,7 @@ src/Rewriter/Util/plugins/ltac2_extra.ml
 src/Rewriter/Util/plugins/ltac2_extra.mli
 src/Rewriter/Util/plugins/ltac2_extra_plugin.mlg
 src/Rewriter/Util/plugins/ltac2_extra_plugin.mllib
+src/Rewriter/Util/plugins/META.coq-rewriter
 
 src/Rewriter/Util/Tactics2/Constr.v
 src/Rewriter/Util/Tactics2/DestCase.v
